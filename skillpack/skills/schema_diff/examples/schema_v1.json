@@ -1,0 +1,7 @@
+{
+  "columns": [
+    {"name": "id", "type": "INTEGER", "nullable": false, "pk": true},
+    {"name": "email", "type": "VARCHAR(255)", "nullable": false},
+    {"name": "created_at", "type": "TIMESTAMP", "nullable": true}
+  ]
+}

@@ -1,0 +1,31 @@
+name: UserSchema
+columns:
+  - name: id
+    type: integer
+    nullable: false
+    unique: true
+    checks:
+      - type: min
+        value: 1
+
+  - name: email
+    type: string
+    nullable: false
+    checks:
+      - type: regex
+        pattern: "^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"
+
+  - name: age
+    type: integer
+    nullable: true
+    checks:
+      - type: between
+        min: 0
+        max: 150
+
+  - name: status
+    type: string
+    nullable: false
+    checks:
+      - type: isin
+        values: ["active", "inactive", "pending"]

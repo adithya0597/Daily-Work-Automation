@@ -1,0 +1,52 @@
+project_name: E-Commerce Analytics
+description: dbt project for e-commerce data analytics
+
+sources:
+  - source_name: raw
+    table_name: users
+    description: Raw users table from production DB
+    columns:
+      - name: id
+        alias: user_id
+        tests: [unique, not_null]
+      - name: email
+        tests: [unique]
+      - name: created_at
+        transform: "CAST(created_at AS TIMESTAMP)"
+      - name: status
+
+  - source_name: raw
+    table_name: orders
+    description: Raw orders table
+    columns:
+      - name: id
+        alias: order_id
+        tests: [unique, not_null]
+      - name: user_id
+        tests: [not_null]
+      - name: amount
+      - name: created_at
+
+models:
+  - name: mart_user_orders
+    description: User order summary with total orders and revenue
+    refs:
+      - name: stg_users
+        alias: users
+      - name: stg_orders
+        alias: orders
+    columns:
+      - name: user_id
+        source: users
+      - name: email
+        source: users
+    aggregations:
+      - function: COUNT
+        column: "orders.order_id"
+        alias: order_count
+      - function: SUM
+        column: "orders.amount"
+        alias: total_revenue
+    group_by:
+      - users.user_id
+      - users.email

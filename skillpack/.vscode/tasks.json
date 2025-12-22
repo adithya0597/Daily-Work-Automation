@@ -1,0 +1,119 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "skillpack: quality-gate",
+      "type": "shell",
+      "command": "skillpack quality-gate",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "skillpack: project-scaffolding",
+      "type": "shell",
+      "command": "skillpack project-scaffolding --name ${input:projectName}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: pr-summary",
+      "type": "shell",
+      "command": "skillpack pr-summary --diff-file ${input:diffFile}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: profile-dataset",
+      "type": "shell",
+      "command": "skillpack profile-dataset --csv ${input:csvFile}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: data-quality",
+      "type": "shell",
+      "command": "skillpack data-quality --config ${input:configFile}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: sql-refiner",
+      "type": "shell",
+      "command": "skillpack sql-refiner --question \"${input:sqlQuestion}\" --dialect ${input:sqlDialect}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: schema-diff",
+      "type": "shell",
+      "command": "skillpack schema-diff --old ${input:oldSchema} --new ${input:newSchema}",
+      "problemMatcher": []
+    },
+    {
+      "label": "skillpack: dbt-generator",
+      "type": "shell",
+      "command": "skillpack dbt-generator --config ${input:dbtConfig}",
+      "problemMatcher": []
+    },
+    {
+      "label": "make: quality",
+      "type": "shell",
+      "command": "make quality",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "make: test",
+      "type": "shell",
+      "command": "make test",
+      "problemMatcher": [],
+      "group": "test"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "projectName",
+      "type": "promptString",
+      "description": "Project name for scaffolding"
+    },
+    {
+      "id": "diffFile",
+      "type": "promptString",
+      "description": "Path to diff file"
+    },
+    {
+      "id": "csvFile",
+      "type": "promptString",
+      "description": "Path to CSV file to profile"
+    },
+    {
+      "id": "configFile",
+      "type": "promptString",
+      "description": "Path to config file"
+    },
+    {
+      "id": "sqlQuestion",
+      "type": "promptString",
+      "description": "Question to convert to SQL"
+    },
+    {
+      "id": "sqlDialect",
+      "type": "pickString",
+      "description": "SQL dialect",
+      "options": ["postgres", "bigquery", "snowflake"]
+    },
+    {
+      "id": "oldSchema",
+      "type": "promptString",
+      "description": "Path to old schema JSON"
+    },
+    {
+      "id": "newSchema",
+      "type": "promptString",
+      "description": "Path to new schema JSON"
+    },
+    {
+      "id": "dbtConfig",
+      "type": "promptString",
+      "description": "Path to dbt generator config"
+    }
+  ]
+}
