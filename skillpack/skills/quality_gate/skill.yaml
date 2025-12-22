@@ -1,0 +1,101 @@
+skill:
+  name: "quality-gate"
+  version: "0.1.0"
+  description: "Run comprehensive quality checks: format, lint, type-check, and tests"
+  tags: ["quality", "lint", "format", "test", "ci"]
+
+command:
+  template: "skillpack quality-gate {check_flag}"
+  binary: "skillpack"
+  subcommand: "quality-gate"
+  arguments:
+    check_flag:
+      type: "flag"
+      required: false
+      cli_name: "--check"
+      description: "Check-only mode, don't modify files"
+      default: false
+
+output:
+  type: "console"
+  description: "Quality check results printed to stdout/stderr"
+  exit_codes:
+    0: "All checks passed"
+    1: "One or more checks failed"
+
+steps:
+  - name: "Format"
+    command: "ruff format"
+    modifies_files: true
+    skipped_when: "--check flag is set"
+  - name: "Lint"
+    command: "ruff check --fix"
+    modifies_files: true
+    skipped_when: "--check flag is set"
+  - name: "Type Check"
+    command: "mypy skillpack/"
+    modifies_files: false
+  - name: "Tests"
+    command: "pytest tests/ -v"
+    modifies_files: false
+
+guardrails:
+  allowed:
+    - "Read all Python files in workspace"
+    - "Modify Python files for formatting (unless --check)"
+    - "Run ruff, mypy, pytest commands"
+    - "Write to stdout/stderr"
+  forbidden:
+    - "Delete any files"
+    - "Modify files when --check flag is set"
+    - "Execute arbitrary shell commands"
+    - "Access network resources"
+    - "Modify configuration files"
+
+preconditions:
+  - description: "Required tools are installed"
+    check: "ruff, mypy, pytest are available in PATH"
+  - description: "Python package is installed"
+    check: "skillpack package is importable"
+
+postconditions:
+  - description: "All checks completed"
+    check: "Each step ran and reported status"
+  - description: "Exit code reflects result"
+    check: "Exit 0 if all passed, non-zero otherwise"
+
+errors:
+  tool_not_found:
+    condition: "Required tool (ruff/mypy/pytest) not installed"
+    message: "Required tool not found: {tool_name}"
+    recovery: "Install missing tool: pip install {tool_name}"
+  test_failure:
+    condition: "One or more tests failed"
+    message: "Tests failed with exit code {exit_code}"
+    recovery: "Review test output and fix failing tests"
+  type_error:
+    condition: "Type checking found errors"
+    message: "Type errors found in codebase"
+    recovery: "Review mypy output and fix type annotations"
+
+examples:
+  - name: "Run full quality gate"
+    description: "Format, lint, type-check, and test with auto-fix"
+    input: {}
+    command: "skillpack quality-gate"
+    expected_output:
+      exit_code: 0
+      message: "All quality checks passed"
+      
+  - name: "CI check mode"
+    description: "Check only, fail if issues found"
+    input:
+      check_flag: true
+    command: "skillpack quality-gate --check"
+    expected_output:
+      exit_code: 0
+      files_modified: 0
+
+related_skills:
+  - name: "project-scaffolding"
+    reason: "Create a project with pre-configured quality tools"

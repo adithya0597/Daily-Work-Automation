@@ -7,6 +7,7 @@ from skillpack import __version__
 from skillpack.skills import (
     data_quality,
     dbt_generator,
+    list_skills,
     pr_summary,
     profile_dataset,
     project_scaffolding,
@@ -40,6 +41,9 @@ def create_parser() -> argparse.ArgumentParser:
         description="Available skills",
         metavar="<skill>",
     )
+
+    # Skill Discovery
+    list_skills.register_parser(subparsers)
 
     # Phase 0: Foundation & Guardrails
     project_scaffolding.register_parser(subparsers)

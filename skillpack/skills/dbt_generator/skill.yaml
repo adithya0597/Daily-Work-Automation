@@ -1,0 +1,247 @@
+skill:
+  name: "dbt-generator"
+  version: "0.1.0"
+  description: "Generate dbt models, tests, schema.yml, and documentation from configuration"
+  tags: ["dbt", "models", "sql", "data", "transformation"]
+
+command:
+  template: "skillpack dbt-generator --config {config_path}"
+  binary: "skillpack"
+  subcommand: "dbt-generator"
+  arguments:
+    config_path:
+      type: "file_path"
+      required: false
+      cli_name: "--config"
+      description: "Path to dbt configuration file (YAML or JSON)"
+      validation:
+        file_must_exist: true
+        extensions: [".yaml", ".yml", ".json"]
+      note: "If not provided, generates example dbt project"
+
+input_schema:
+  format: "yaml"
+  structure:
+    project_name:
+      type: "string"
+      required: false
+      default: "dbt Project"
+      description: "Name of the dbt project"
+    description:
+      type: "string"
+      required: false
+      description: "Project description for docs"
+    sources:
+      type: "array"
+      required: true
+      description: "Source tables to create staging models for"
+      items:
+        source_name:
+          type: "string"
+          required: true
+          description: "Name of the source (e.g., 'raw')"
+        table_name:
+          type: "string"
+          required: true
+          description: "Name of the source table"
+        description:
+          type: "string"
+          required: false
+        columns:
+          type: "array"
+          required: true
+          items:
+            name:
+              type: "string"
+              required: true
+            alias:
+              type: "string"
+              required: false
+              description: "Rename column in staging model"
+            transform:
+              type: "string"
+              required: false
+              description: "SQL transform expression"
+            tests:
+              type: "array"
+              required: false
+              items: ["unique", "not_null", "accepted_values", "relationships"]
+    models:
+      type: "array"
+      required: false
+      description: "Mart/intermediate models to generate"
+      items:
+        name:
+          type: "string"
+          required: true
+        description:
+          type: "string"
+          required: false
+        refs:
+          type: "array"
+          description: "References to other models"
+          items:
+            name: "string"
+            alias: "string"
+        columns:
+          type: "array"
+        aggregations:
+          type: "array"
+          items:
+            function: ["COUNT", "SUM", "AVG", "MIN", "MAX"]
+            column: "string"
+            alias: "string"
+        group_by:
+          type: "array"
+
+output:
+  base_directory: "./out/dbt_generator/"
+  structure:
+    - path: "models/"
+      type: "directory"
+    - path: "models/staging/"
+      type: "directory"
+      files: "stg_{table_name}.sql for each source"
+    - path: "models/marts/"
+      type: "directory"
+      files: "{model_name}.sql for each mart model"
+    - path: "models/schema.yml"
+      type: "yaml"
+      description: "dbt schema with sources, models, and tests"
+    - path: "models/docs.md"
+      type: "markdown"
+      description: "dbt documentation blocks"
+
+guardrails:
+  allowed:
+    - "Read the specified config file"
+    - "Parse YAML or JSON configuration"
+    - "Generate SQL model files"
+    - "Generate schema.yml"
+    - "Write to ./out/dbt_generator/"
+  forbidden:
+    - "Execute dbt commands (dbt run, dbt test)"
+    - "Connect to any database"
+    - "Modify any existing dbt project"
+    - "Delete any files"
+    - "Make network requests"
+    - "Access data warehouse credentials"
+
+preconditions:
+  - description: "Config file exists (if specified)"
+    check: "File at config_path exists if provided"
+  - description: "Config has required structure"
+    check: "Config contains 'sources' array"
+  - description: "At least one source defined"
+    check: "sources array is not empty"
+
+postconditions:
+  - description: "Model directory structure is created"
+    check: "models/, models/staging/, models/marts/ exist"
+  - description: "Staging models are generated"
+    check: "stg_*.sql exists for each source table"
+  - description: "Schema.yml is generated"
+    check: "schema.yml contains all models"
+  - description: "Generated SQL is valid dbt"
+    check: "Models use {{ config() }}, {{ source() }}, {{ ref() }}"
+
+errors:
+  file_not_found:
+    condition: "Config file does not exist"
+    message: "Config file not found: {config_path}"
+    recovery: "Check file path or omit --config for example"
+  invalid_yaml:
+    condition: "Config is not valid YAML"
+    message: "Unable to parse config file"
+    recovery: "Fix YAML syntax errors"
+  no_sources:
+    condition: "No sources defined in config"
+    message: "No sources defined in configuration"
+    recovery: "Add at least one source to the config"
+
+dbt_patterns:
+  staging_model:
+    naming: "stg_{source}_{table}"
+    materialization: "view"
+    purpose: "1:1 cleaning layer on source tables"
+    template: |
+      {{ config(materialized='view', tags=['staging']) }}
+      WITH source AS (
+          SELECT * FROM {{ source('{source_name}', '{table_name}') }}
+      ),
+      staged AS (
+          SELECT {columns} FROM source
+      )
+      SELECT * FROM staged
+  mart_model:
+    naming: "mart_{domain}_{entity}"
+    materialization: "table"
+    purpose: "Business logic and aggregations"
+    template: |
+      {{ config(materialized='table', tags=['mart']) }}
+      WITH {ctes}
+      SELECT {columns}
+      FROM {joins}
+      {where}
+      {group_by}
+
+examples:
+  - name: "Generate example project"
+    description: "Generate dbt project without config"
+    input: {}
+    command: "skillpack dbt-generator"
+    expected_output:
+      directories_created:
+        - "./out/dbt_generator/models/"
+        - "./out/dbt_generator/models/staging/"
+        - "./out/dbt_generator/models/marts/"
+      files_created:
+        - "./out/dbt_generator/models/schema.yml"
+        - "./out/dbt_generator/models/docs.md"
+      
+  - name: "Generate from config"
+    description: "Generate dbt models from configuration"
+    input:
+      config_path: "dbt_config.yaml"
+    command: "skillpack dbt-generator --config dbt_config.yaml"
+    expected_output:
+      staging_models: "One per source table"
+      mart_models: "One per model in config"
+
+  - name: "Example config structure"
+    description: "Full configuration example"
+    config_content: |
+      project_name: E-Commerce Analytics
+      description: dbt project for e-commerce
+      
+      sources:
+        - source_name: raw
+          table_name: orders
+          columns:
+            - name: id
+              alias: order_id
+              tests: [unique, not_null]
+            - name: amount
+            - name: created_at
+              transform: "CAST(created_at AS TIMESTAMP)"
+      
+      models:
+        - name: mart_daily_revenue
+          description: Daily revenue aggregation
+          refs:
+            - name: stg_orders
+              alias: orders
+          aggregations:
+            - function: SUM
+              column: orders.amount
+              alias: total_revenue
+          group_by:
+            - DATE(orders.created_at)
+
+related_skills:
+  - name: "profile-dataset"
+    reason: "Profile data before modeling"
+  - name: "data-quality"
+    reason: "Add Pandera validation"
+  - name: "schema-diff"
+    reason: "Track schema changes"

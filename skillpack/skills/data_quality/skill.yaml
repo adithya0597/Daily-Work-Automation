@@ -1,0 +1,201 @@
+skill:
+  name: "data-quality"
+  version: "0.1.0"
+  description: "Generate Pandera validation schemas for DataFrame data quality validation"
+  tags: ["data", "validation", "pandera", "quality", "schema"]
+
+command:
+  template: "skillpack data-quality --config {config_path}"
+  binary: "skillpack"
+  subcommand: "data-quality"
+  arguments:
+    config_path:
+      type: "file_path"
+      required: false
+      cli_name: "--config"
+      description: "Path to schema configuration file (YAML or JSON)"
+      validation:
+        file_must_exist: true
+        extensions: [".yaml", ".yml", ".json"]
+      note: "If not provided, generates an example schema"
+
+input_schema:
+  format: "yaml or json"
+  structure:
+    name:
+      type: "string"
+      required: true
+      description: "Name of the schema (used in generated code)"
+    columns:
+      type: "array"
+      required: true
+      items:
+        name:
+          type: "string"
+          required: true
+          description: "Column name"
+        type:
+          type: "string"
+          required: true
+          enum: ["string", "str", "integer", "int", "float", "number", "boolean", "bool", "datetime", "date"]
+          description: "Data type of the column"
+        nullable:
+          type: "boolean"
+          required: false
+          default: true
+          description: "Whether null values are allowed"
+        unique:
+          type: "boolean"
+          required: false
+          default: false
+          description: "Whether values must be unique"
+        checks:
+          type: "array"
+          required: false
+          description: "Additional validation checks"
+          items:
+            type:
+              enum: ["min", "max", "between", "regex", "isin"]
+            value: "depends on type"
+            pattern: "string (for regex)"
+            values: "array (for isin)"
+            min: "number (for between)"
+            max: "number (for between)"
+
+output:
+  base_directory: "./out/data_quality/"
+  files:
+    - path: "schema.py"
+      type: "python"
+      description: "Pandera schema definition"
+      contains:
+        - "import pandera"
+        - "DataFrameSchema definition"
+        - "Column definitions with types and checks"
+        - "validate() function"
+    - path: "run_validation.py"
+      type: "python"
+      description: "Validation runner script"
+      usage: "python run_validation.py <csv_file>"
+
+guardrails:
+  allowed:
+    - "Read the specified config file"
+    - "Parse YAML or JSON configuration"
+    - "Generate Python code for Pandera schema"
+    - "Write to ./out/data_quality/"
+  forbidden:
+    - "Execute the generated schema"
+    - "Access data files"
+    - "Delete any files"
+    - "Modify any existing files"
+    - "Make network requests"
+    - "Install packages"
+
+preconditions:
+  - description: "Config file exists (if specified)"
+    check: "File at config_path exists if provided"
+  - description: "Config is valid YAML/JSON"
+    check: "File can be parsed as YAML or JSON"
+  - description: "Config has required structure"
+    check: "Config contains 'name' and 'columns' fields"
+
+postconditions:
+  - description: "Schema files are created"
+    check: "schema.py and run_validation.py exist"
+  - description: "Generated code is valid Python"
+    check: "schema.py is syntactically valid Python"
+  - description: "Schema matches configuration"
+    check: "All columns from config are in schema"
+
+errors:
+  file_not_found:
+    condition: "Config file does not exist"
+    message: "Config file not found: {config_path}"
+    recovery: "Check the file path or omit --config for example"
+  invalid_yaml:
+    condition: "Config file is not valid YAML/JSON"
+    message: "Unable to parse config file"
+    recovery: "Fix YAML/JSON syntax errors in config"
+  missing_columns:
+    condition: "Config has no columns defined"
+    message: "No columns defined in configuration"
+    recovery: "Add at least one column to config"
+  invalid_type:
+    condition: "Column type is not recognized"
+    message: "Unknown column type: {type}"
+    recovery: "Use: string, integer, float, boolean, datetime"
+
+check_types:
+  min:
+    description: "Minimum value check"
+    applies_to: ["integer", "float"]
+    config: "type: min, value: <number>"
+  max:
+    description: "Maximum value check"
+    applies_to: ["integer", "float"]
+    config: "type: max, value: <number>"
+  between:
+    description: "Value range check"
+    applies_to: ["integer", "float"]
+    config: "type: between, min: <number>, max: <number>"
+  regex:
+    description: "Regular expression pattern match"
+    applies_to: ["string"]
+    config: "type: regex, pattern: <regex>"
+  isin:
+    description: "Value must be in allowed list"
+    applies_to: ["string", "integer"]
+    config: "type: isin, values: [<allowed_values>]"
+
+examples:
+  - name: "Generate example schema"
+    description: "Generate schema without config (uses built-in example)"
+    input: {}
+    command: "skillpack data-quality"
+    expected_output:
+      files_created:
+        - "./out/data_quality/schema.py"
+        - "./out/data_quality/run_validation.py"
+      
+  - name: "Generate from config"
+    description: "Generate schema from custom configuration"
+    input:
+      config_path: "schema_config.yaml"
+    command: "skillpack data-quality --config schema_config.yaml"
+    expected_output:
+      files_created:
+        - "./out/data_quality/schema.py"
+        - "./out/data_quality/run_validation.py"
+
+  - name: "Example config file"
+    description: "Sample configuration structure"
+    config_content: |
+      name: OrderSchema
+      columns:
+        - name: order_id
+          type: integer
+          nullable: false
+          unique: true
+          checks:
+            - type: min
+              value: 1
+        - name: amount
+          type: float
+          nullable: false
+          checks:
+            - type: between
+              min: 0.01
+              max: 100000
+        - name: status
+          type: string
+          nullable: false
+          checks:
+            - type: isin
+              values: ["pending", "completed", "cancelled"]
+
+related_skills:
+  - name: "profile-dataset"
+    reason: "Profile data before creating validation schema"
+  - name: "dbt-generator"
+    reason: "Add data tests to dbt models"
