@@ -114,3 +114,63 @@ def test_progressive_disclosure_efficiency() -> None:
     # Full should have docs and scripts
     assert "docs" in full
     assert "scripts" in full
+
+
+# =============================================================================
+# Dependency Validation Tests
+# =============================================================================
+
+def test_skill_exists() -> None:
+    """Test skill_exists returns correct values."""
+    from skillpack.utils.skill_loader import skill_exists
+    
+    assert skill_exists("profile-dataset") is True
+    assert skill_exists("nonexistent-skill") is False
+
+
+def test_get_skill_dependencies() -> None:
+    """Test getting dependencies from a skill."""
+    from skillpack.utils.skill_loader import get_skill_dependencies
+    
+    # data-quality declares profile-dataset as dependency
+    deps = get_skill_dependencies("data-quality")
+    assert isinstance(deps, list)
+    assert "profile-dataset" in deps
+
+
+def test_validate_dependencies_valid() -> None:
+    """Test validating a skill with valid dependencies."""
+    from skillpack.utils.skill_loader import validate_dependencies
+    
+    result = validate_dependencies("data-quality")
+    assert result["valid"] is True
+    assert "profile-dataset" in result["dependencies"]
+    assert len(result["missing"]) == 0
+
+
+def test_validate_all_dependencies() -> None:
+    """Test validating all skills."""
+    from skillpack.utils.skill_loader import validate_all_dependencies
+    
+    result = validate_all_dependencies()
+    assert result["total_skills"] == 8
+    assert "details" in result
+
+
+def test_get_dependency_graph() -> None:
+    """Test building the dependency graph."""
+    from skillpack.utils.skill_loader import get_dependency_graph
+    
+    graph = get_dependency_graph()
+    assert len(graph) == 8
+    assert "data-quality" in graph
+    assert "profile-dataset" in graph["data-quality"]
+
+
+def test_get_reverse_dependencies() -> None:
+    """Test getting skills that depend on a given skill."""
+    from skillpack.utils.skill_loader import get_reverse_dependencies
+    
+    # profile-dataset is a dependency of data-quality and dbt-generator
+    dependents = get_reverse_dependencies("profile-dataset")
+    assert "data-quality" in dependents

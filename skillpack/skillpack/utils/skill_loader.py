@@ -331,6 +331,144 @@ def get_skill_command(skill_name: str) -> dict[str, Any]:
 
 
 # =============================================================================
+# Dependency Validation
+# =============================================================================
+
+def skill_exists(skill_name: str) -> bool:
+    """Check if a skill exists.
+
+    Args:
+        skill_name: Name of the skill.
+
+    Returns:
+        True if skill exists, False otherwise.
+    """
+    try:
+        get_skill_metadata(skill_name)
+        return True
+    except FileNotFoundError:
+        return False
+
+
+def get_skill_dependencies(skill_name: str) -> list[str]:
+    """Get dependencies declared by a skill.
+
+    Args:
+        skill_name: Name of the skill.
+
+    Returns:
+        List of dependency skill names.
+    """
+    metadata = get_skill_metadata(skill_name)
+    return metadata.get("dependencies", [])
+
+
+def validate_dependencies(skill_name: str) -> dict[str, Any]:
+    """Validate that all dependencies of a skill exist.
+
+    Args:
+        skill_name: Name of the skill to validate.
+
+    Returns:
+        Dictionary with validation results:
+        - valid: True if all dependencies exist
+        - dependencies: List of declared dependencies
+        - missing: List of missing dependencies
+        - warnings: List of warning messages
+    """
+    result = {
+        "valid": True,
+        "skill": skill_name,
+        "dependencies": [],
+        "missing": [],
+        "warnings": [],
+    }
+
+    try:
+        deps = get_skill_dependencies(skill_name)
+        result["dependencies"] = deps
+
+        for dep in deps:
+            if not skill_exists(dep):
+                result["missing"].append(dep)
+                result["warnings"].append(f"Missing dependency: {dep}")
+                result["valid"] = False
+
+    except FileNotFoundError:
+        result["valid"] = False
+        result["warnings"].append(f"Skill not found: {skill_name}")
+
+    return result
+
+
+def validate_all_dependencies() -> dict[str, Any]:
+    """Validate dependencies for all skills.
+
+    Returns:
+        Dictionary with overall validation results and per-skill details.
+    """
+    results = {
+        "valid": True,
+        "total_skills": 0,
+        "skills_with_issues": 0,
+        "details": {},
+        "warnings": [],
+    }
+
+    for skill in list_skills():
+        skill_name = skill.get("name", skill.get("_directory", ""))
+        if not skill_name:
+            continue
+
+        results["total_skills"] += 1
+        validation = validate_dependencies(skill_name)
+        results["details"][skill_name] = validation
+
+        if not validation["valid"]:
+            results["valid"] = False
+            results["skills_with_issues"] += 1
+            results["warnings"].extend(validation["warnings"])
+
+    return results
+
+
+def get_dependency_graph() -> dict[str, list[str]]:
+    """Build a dependency graph of all skills.
+
+    Returns:
+        Dictionary mapping skill names to their dependencies.
+    """
+    graph = {}
+
+    for skill in list_skills():
+        skill_name = skill.get("name", skill.get("_directory", ""))
+        if skill_name:
+            deps = skill.get("dependencies", [])
+            graph[skill_name] = deps
+
+    return graph
+
+
+def get_reverse_dependencies(skill_name: str) -> list[str]:
+    """Get skills that depend on the given skill.
+
+    Args:
+        skill_name: Name of the skill.
+
+    Returns:
+        List of skills that depend on this skill.
+    """
+    graph = get_dependency_graph()
+    dependents = []
+
+    for name, deps in graph.items():
+        if skill_name in deps:
+            dependents.append(name)
+
+    return dependents
+
+
+# =============================================================================
 # Export Functions
 # =============================================================================
 
