@@ -1,91 +1,36 @@
----
-name: data_quality
-description: Generate Pandera validation schemas for data quality
-tags: [data, validation, pandera, quality]
-activation_triggers:
-  - "validate data"
-  - "create schema"
-  - "data quality"
-version: "0.1.0"
-dependencies: [pandera, pandas]
----
-
 # Data Quality Skill
 
-## Overview
-
-Generates Pandera validation schemas from configuration:
-- Creates `schema.py` with DataFrame schema
-- Creates `run_validation.py` runner script
-- Supports various column types and checks
-
-## Workflow
-
-1. Read configuration (YAML or JSON)
-2. Generate Pandera schema with columns and checks
-3. Generate validation runner script
-4. Write to `./out/data_quality/`
+## When to Use
+- Creating data validation rules
+- Before ETL pipelines
+- After profiling a dataset
 
 ## Inputs
-
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `--config` | No | - | Path to config file (generates example if not provided) |
-
-### Config Format
-
-```yaml
-name: UserSchema
-columns:
-  - name: id
-    type: integer
-    nullable: false
-    unique: true
-    checks:
-      - type: min
-        value: 1
-  - name: email
-    type: string
-    nullable: false
-    checks:
-      - type: regex
-        pattern: "^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"
-  - name: age
-    type: integer
-    nullable: true
-    checks:
-      - type: between
-        min: 0
-        max: 150
-```
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| config_path | file_path | No | Schema config file |
 
 ## Outputs
+- `schema.py` - Pandera schema definition
+- `run_validation.py` - Validation runner
 
-```
-./out/data_quality/
-├── schema.py           # Pandera schema
-└── run_validation.py   # Runner script
-```
+## Procedure
+1. **Load config** - Parse YAML/JSON or use example
+2. **Generate schema** - Create Pandera DataFrameSchema
+3. **Create runner** - Script to validate CSV files
+4. **Write outputs** - Save to ./out/
 
-## Error Handling
+## Guardrails
+### Allowed
+- Read config file
+- Generate Python code
+- Write to ./out/data_quality/
 
-- Invalid config: Returns parsing error
-- Unknown types: Maps to string
+### Forbidden
+- Execute generated schema
+- Access data files
 
-## Examples
-
+## Example
 ```bash
-# Generate example schema
-skillpack data-quality
-
-# Generate from config
 skillpack data-quality --config schema_config.yaml
-
-# Run validation
-python ./out/data_quality/run_validation.py data.csv
 ```
-
-## Related Skills
-
-- `profile-dataset`: Profile data before creating schema
-- `dbt-generator`: Add tests to dbt models

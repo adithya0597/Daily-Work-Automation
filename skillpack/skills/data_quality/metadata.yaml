@@ -1,0 +1,31 @@
+# data-quality
+version: "1.0.0"
+description: Generate Pandera validation schemas for DataFrame data quality
+tags: [data, validation, pandera, quality, schema]
+
+triggers:
+  - "validate data"
+  - "data quality"
+  - "create schema"
+  - "validation rules"
+
+dependencies:
+  - profile-dataset
+
+command:
+  binary: skillpack
+  subcommand: data-quality
+  template: "skillpack data-quality --config {config_path}"
+
+arguments:
+  config_path:
+    type: file_path
+    required: false
+    cli_name: "--config"
+    description: Path to schema configuration file
+
+output:
+  directory: "./out/data_quality/"
+  files:
+    - schema.py
+    - run_validation.py

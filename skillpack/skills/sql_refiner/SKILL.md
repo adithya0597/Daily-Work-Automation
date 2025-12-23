@@ -1,69 +1,38 @@
----
-name: sql_refiner
-description: Generate SQL queries from natural language questions
-tags: [sql, query, postgres, bigquery, snowflake]
-activation_triggers:
-  - "write sql"
-  - "generate query"
-  - "sql from question"
-version: "0.1.0"
-dependencies: []
----
+# SQL Refiner Skill
 
-# SQL Query Refiner Skill
-
-## Overview
-
-Generates SQL queries from natural language questions:
-- Detects aggregations, conditions, ordering
-- Supports multiple SQL dialects
-- Generates EXPLAIN query for performance analysis
-- Provides query notes with placeholders
-
-## Workflow
-
-1. Parse natural language question
-2. Extract entities (aggregations, filters, limits)
-3. Generate dialect-specific SQL
-4. Generate EXPLAIN query
-5. Create notes with usage guidance
-6. Write to `./out/sql_refiner/`
+## When to Use
+- Converting questions to SQL
+- Need dialect-specific syntax
+- Want query optimization hints
 
 ## Inputs
-
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `--question` | Yes | - | Natural language question |
-| `--dialect` | No | postgres | SQL dialect (postgres, bigquery, snowflake) |
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| question | string | Yes | Natural language question |
+| dialect | enum | No | postgres, bigquery, snowflake |
 
 ## Outputs
+- `query.sql` - Generated SQL query
+- `explain.sql` - EXPLAIN statement
+- `query_notes.md` - Usage notes
 
-```
-./out/sql_refiner/
-├── query.sql        # Main query
-├── explain.sql      # EXPLAIN query
-└── query_notes.md   # Usage notes
-```
+## Procedure
+1. **Parse question** - Extract entities, aggregations
+2. **Match patterns** - COUNT, SUM, AVG, etc.
+3. **Generate SQL** - Dialect-specific syntax
+4. **Write outputs** - Save to ./out/
 
-## Error Handling
+## Guardrails
+### Allowed
+- Parse natural language
+- Generate SQL templates
+- Write to ./out/sql_refiner/
 
-- Unknown dialect: Returns error with valid options
-- Empty question: Generates basic template
+### Forbidden
+- Execute SQL queries
+- Connect to databases
 
-## Examples
-
+## Example
 ```bash
-# Simple query
-skillpack sql-refiner --question "How many active users signed up last 30 days"
-
-# With specific dialect
-skillpack sql-refiner --question "Get top 10 orders by amount" --dialect bigquery
-
-# Aggregation query
-skillpack sql-refiner --question "What is the average order value per customer"
+skillpack sql-refiner --question "How many active users" --dialect postgres
 ```
-
-## Related Skills
-
-- `profile-dataset`: Understand data before writing queries
-- `schema-diff`: Check schema compatibility

@@ -1,77 +1,39 @@
----
-name: schema_diff
-description: Compare database schemas and generate migration scripts
-tags: [schema, migration, database, diff]
-activation_triggers:
-  - "compare schemas"
-  - "generate migration"
-  - "schema diff"
-version: "0.1.0"
-dependencies: []
----
-
 # Schema Diff Skill
 
-## Overview
-
-Compares two schema definitions and generates:
-- Migration SQL with forward and rollback statements
-- Impact assessment with backfill requirements
-- Documentation of all changes
-
-## Workflow
-
-1. Load old and new schema JSON files
-2. Compare columns (added, removed, modified)
-3. Detect PK changes
-4. Generate migration SQL
-5. Generate impact notes
-6. Write to `./out/schema_diff/`
+## When to Use
+- Planning database migrations
+- Comparing schema versions
+- Generating ALTER statements
 
 ## Inputs
-
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `--old` | Yes | - | Path to old schema JSON |
-| `--new` | Yes | - | Path to new schema JSON |
-| `--table` | No | "table_name" | Table name for migration |
-
-### Schema Format
-
-```json
-{
-  "columns": [
-    {"name": "id", "type": "INTEGER", "nullable": false, "pk": true},
-    {"name": "email", "type": "VARCHAR(255)", "nullable": false},
-    {"name": "created_at", "type": "TIMESTAMP", "nullable": true}
-  ]
-}
-```
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| old_schema | file_path | Yes | Old schema JSON |
+| new_schema | file_path | Yes | New schema JSON |
+| table_name | string | No | Table name for SQL |
 
 ## Outputs
+- `migration.sql` - Forward + rollback SQL
+- `migration.md` - Impact documentation
 
-```
-./out/schema_diff/
-├── migration.sql   # Forward + rollback SQL
-└── migration.md    # Impact documentation
-```
+## Procedure
+1. **Parse schemas** - Load JSON, extract columns
+2. **Compare** - Find added, removed, modified
+3. **Generate SQL** - ALTER TABLE statements
+4. **Assess impact** - Document risks
+5. **Write outputs** - Save to ./out/
 
-## Error Handling
+## Guardrails
+### Allowed
+- Read schema JSON files
+- Generate SQL migration code
+- Write to ./out/schema_diff/
 
-- Missing files: Returns error with path
-- Invalid JSON: Returns parsing error
+### Forbidden
+- Execute SQL migrations
+- Connect to databases
 
-## Examples
-
+## Example
 ```bash
-# Compare schemas
-skillpack schema-diff --old schema_v1.json --new schema_v2.json
-
-# With table name
 skillpack schema-diff --old v1.json --new v2.json --table users
 ```
-
-## Related Skills
-
-- `pr-summary`: Include migration in PR summary
-- `dbt-generator`: Update dbt models for schema changes

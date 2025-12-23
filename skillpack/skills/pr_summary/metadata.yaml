@@ -1,0 +1,35 @@
+# pr-summary
+version: "1.0.0"
+description: Generate comprehensive PR summaries with risk assessment from git diffs
+tags: [pr, git, review, risk, documentation]
+
+triggers:
+  - "summarize pr"
+  - "pr summary"
+  - "review changes"
+  - "assess risk"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: pr-summary
+  template: "skillpack pr-summary --diff-file {diff_file} --title {title}"
+
+arguments:
+  diff_file:
+    type: file_path
+    required: true
+    cli_name: "--diff-file"
+    description: Path to unified diff file
+  title:
+    type: string
+    required: false
+    cli_name: "--title"
+    default: "Pull Request Summary"
+    description: PR title
+
+output:
+  directory: "./out/pr_summary/"
+  files:
+    - PR_SUMMARY.md

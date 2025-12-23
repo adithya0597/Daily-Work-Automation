@@ -1,0 +1,30 @@
+# quality-gate
+version: "1.0.0"
+description: Run comprehensive quality checks - format, lint, type-check, and tests
+tags: [quality, lint, format, test, ci]
+
+triggers:
+  - "run tests"
+  - "check code"
+  - "quality check"
+  - "lint code"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: quality-gate
+  template: "skillpack quality-gate {check_flag}"
+
+arguments:
+  check_flag:
+    type: flag
+    required: false
+    cli_name: "--check"
+    description: Check-only mode, don't modify files
+
+output:
+  type: console
+  exit_codes:
+    0: All checks passed
+    1: One or more checks failed

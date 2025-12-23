@@ -1,0 +1,40 @@
+# schema-diff
+version: "1.0.0"
+description: Compare database schemas and generate migration scripts with impact assessment
+tags: [schema, migration, database, diff, sql]
+
+triggers:
+  - "compare schemas"
+  - "generate migration"
+  - "schema diff"
+  - "database change"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: schema-diff
+  template: "skillpack schema-diff --old {old_schema} --new {new_schema} --table {table_name}"
+
+arguments:
+  old_schema:
+    type: file_path
+    required: true
+    cli_name: "--old"
+    description: Path to old schema JSON
+  new_schema:
+    type: file_path
+    required: true
+    cli_name: "--new"
+    description: Path to new schema JSON
+  table_name:
+    type: string
+    required: false
+    cli_name: "--table"
+    default: "table_name"
+
+output:
+  directory: "./out/schema_diff/"
+  files:
+    - migration.sql
+    - migration.md

@@ -1,0 +1,34 @@
+# dbt-generator
+version: "1.0.0"
+description: Generate dbt models, tests, schema.yml, and documentation from configuration
+tags: [dbt, models, sql, data, transformation]
+
+triggers:
+  - "create dbt models"
+  - "generate dbt"
+  - "dbt project"
+  - "staging models"
+
+dependencies:
+  - profile-dataset
+  - data-quality
+
+command:
+  binary: skillpack
+  subcommand: dbt-generator
+  template: "skillpack dbt-generator --config {config_path}"
+
+arguments:
+  config_path:
+    type: file_path
+    required: false
+    cli_name: "--config"
+    description: Path to dbt configuration file
+
+output:
+  directory: "./out/dbt_generator/"
+  structure:
+    - models/staging/*.sql
+    - models/marts/*.sql
+    - models/schema.yml
+    - models/docs.md

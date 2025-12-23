@@ -1,4 +1,4 @@
-"""Tests for skill loader and list-skills command."""
+"""Tests for skill loader with progressive disclosure."""
 
 from pathlib import Path
 
@@ -7,8 +7,11 @@ import pytest
 from skillpack.utils.skill_loader import (
     export_skills_json,
     format_skill_for_llm,
+    get_skill_guardrails,
+    get_skill_metadata,
     list_skills,
     load_skill,
+    load_skill_full,
 )
 
 
@@ -16,25 +19,46 @@ def test_list_skills_returns_list() -> None:
     """Test that list_skills returns a list of skills."""
     skills = list_skills()
     assert isinstance(skills, list)
-    # Should have at least some skills
     assert len(skills) >= 1
 
 
-def test_list_skills_has_required_fields() -> None:
-    """Test that each skill has required metadata."""
+def test_list_skills_has_metadata_fields() -> None:
+    """Test that each skill has required metadata fields."""
     skills = list_skills()
     for skill in skills:
-        assert "name" in skill
-        assert "version" in skill
-        assert "description" in skill
+        # New format uses flat structure (not nested under 'skill')
+        assert "description" in skill or "name" in skill
+        assert "_directory" in skill
 
 
-def test_load_skill_profile_dataset() -> None:
-    """Test loading a specific skill."""
+def test_get_skill_metadata() -> None:
+    """Test getting metadata for a specific skill."""
+    metadata = get_skill_metadata("profile-dataset")
+    assert metadata is not None
+    assert "description" in metadata
+
+
+def test_load_skill_tier2() -> None:
+    """Test loading skill with procedure (Tier 2)."""
     skill = load_skill("profile-dataset")
     assert skill is not None
-    assert "skill" in skill
-    assert skill["skill"]["name"] == "profile-dataset"
+    assert "_tier" in skill
+    assert skill["_tier"] == 2
+    assert "skill_md" in skill
+    assert "available_docs" in skill
+    assert "available_scripts" in skill
+
+
+def test_load_skill_full_tier3() -> None:
+    """Test loading full skill content (Tier 3)."""
+    skill = load_skill_full("profile-dataset")
+    assert skill is not None
+    assert skill["_tier"] == 3
+    assert "docs" in skill
+    assert "scripts" in skill
+    # profile_dataset has edge_cases.md and profile_csv.py
+    assert "edge_cases.md" in skill.get("docs", {})
+    assert "profile_csv.py" in skill.get("scripts", {})
 
 
 def test_load_skill_not_found() -> None:
@@ -43,12 +67,19 @@ def test_load_skill_not_found() -> None:
         load_skill("nonexistent-skill")
 
 
-def test_format_skill_for_llm() -> None:
-    """Test LLM-formatted output."""
-    output = format_skill_for_llm("profile-dataset")
+def test_format_skill_for_llm_tier1() -> None:
+    """Test LLM-formatted output at Tier 1."""
+    output = format_skill_for_llm("profile-dataset", tier=1)
     assert "# Skill: profile-dataset" in output
-    assert "ALLOWED:" in output
-    assert "FORBIDDEN:" in output
+    assert "Description:" in output
+
+
+def test_format_skill_for_llm_tier2() -> None:
+    """Test LLM-formatted output at Tier 2."""
+    output = format_skill_for_llm("profile-dataset", tier=2)
+    assert "# Skill: profile-dataset" in output
+    assert "## Procedure" in output
+    assert "Available docs:" in output or "Available scripts:" in output
 
 
 def test_export_skills_json() -> None:
@@ -58,21 +89,28 @@ def test_export_skills_json() -> None:
     output = export_skills_json()
     data = json.loads(output)
     assert "skills" in data
+    assert "tier" in data
     assert isinstance(data["skills"], list)
 
 
-def test_skill_has_guardrails() -> None:
-    """Test that skills have guardrails defined."""
-    skill = load_skill("profile-dataset")
-    guardrails = skill.get("guardrails", {})
+def test_get_skill_guardrails() -> None:
+    """Test extracting guardrails from skill.md."""
+    guardrails = get_skill_guardrails("profile-dataset")
     assert "allowed" in guardrails
     assert "forbidden" in guardrails
+    # profile-dataset has guardrails defined
+    assert len(guardrails["allowed"]) > 0
     assert len(guardrails["forbidden"]) > 0
 
 
-def test_skill_has_examples() -> None:
-    """Test that skills have examples defined."""
-    skill = load_skill("profile-dataset")
-    examples = skill.get("examples", [])
-    assert len(examples) > 0
-    assert "command" in examples[0]
+def test_progressive_disclosure_efficiency() -> None:
+    """Test that Tier 1 is more compact than Tier 3."""
+    metadata = get_skill_metadata("profile-dataset")
+    full = load_skill_full("profile-dataset")
+    
+    # Full should have more keys than metadata
+    assert len(full) > len(metadata)
+    
+    # Full should have docs and scripts
+    assert "docs" in full
+    assert "scripts" in full
