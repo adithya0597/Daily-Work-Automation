@@ -1,4 +1,4 @@
-# pr-summary
+name: pr-summary
 version: "1.0.0"
 description: Generate comprehensive PR summaries with risk assessment from git diffs
 tags: [pr, git, review, risk, documentation]

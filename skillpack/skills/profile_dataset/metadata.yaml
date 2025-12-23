@@ -1,4 +1,4 @@
-# profile-dataset
+name: profile-dataset
 version: "1.0.0"
 description: Profile CSV datasets with comprehensive statistics and data quality insights
 tags: [data, csv, profiling, analysis, statistics]

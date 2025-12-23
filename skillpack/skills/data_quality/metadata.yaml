@@ -1,4 +1,4 @@
-# data-quality
+name: data-quality
 version: "1.0.0"
 description: Generate Pandera validation schemas for DataFrame data quality
 tags: [data, validation, pandera, quality, schema]

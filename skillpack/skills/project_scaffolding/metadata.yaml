@@ -1,4 +1,4 @@
-# project-scaffolding
+name: project-scaffolding
 version: "1.0.0"
 description: Generate a complete Python project skeleton with modern best practices
 tags: [scaffolding, project, python, cli]

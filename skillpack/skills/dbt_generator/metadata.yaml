@@ -1,4 +1,4 @@
-# dbt-generator
+name: dbt-generator
 version: "1.0.0"
 description: Generate dbt models, tests, schema.yml, and documentation from configuration
 tags: [dbt, models, sql, data, transformation]

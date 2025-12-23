@@ -1,4 +1,4 @@
-# schema-diff
+name: schema-diff
 version: "1.0.0"
 description: Compare database schemas and generate migration scripts with impact assessment
 tags: [schema, migration, database, diff, sql]

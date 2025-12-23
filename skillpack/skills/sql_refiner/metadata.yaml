@@ -1,4 +1,4 @@
-# sql-refiner
+name: sql-refiner
 version: "1.0.0"
 description: Generate SQL queries from natural language with dialect-specific syntax
 tags: [sql, query, postgres, bigquery, snowflake]

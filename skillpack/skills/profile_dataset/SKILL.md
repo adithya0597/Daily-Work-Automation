@@ -40,8 +40,46 @@ Output directory: `./out/profile_dataset/`
 - Execute arbitrary code
 - Access files other than the specified CSV
 - Make network requests
+- Load CSV into memory if larger than 100MB
 
-## Example
+## Preconditions
+- [ ] CSV file exists and is readable
+- [ ] CSV file has header row
+- [ ] File is valid CSV format
+
+## Postconditions
+- [ ] profile.md exists in output directory
+- [ ] profile.json exists in output directory
+- [ ] All columns are profiled
+- [ ] Input file is unchanged
+
+## Error Handling
+| Error | Condition | Recovery |
+|-------|-----------|----------|
+| FileNotFoundError | CSV file does not exist | Check path, verify file exists |
+| UnicodeDecodeError | Non-UTF8 encoding | Convert file to UTF-8 |
+| EmptyDataError | No data rows | Add at least one data row |
+| NoHeaderError | Missing header row | Ensure CSV has headers |
+
+## Examples
+
+### Basic Usage
 ```bash
 skillpack profile-dataset --csv data/users.csv
 ```
+
+### With Absolute Path
+```bash
+skillpack profile-dataset --csv /home/user/data/sales.csv
+```
+
+### Expected Output
+```
+./out/profile_dataset/
+├── profile.md      # Human-readable report
+└── profile.json    # Machine-readable data
+```
+
+## Related Skills
+- **data-quality**: Generate validation schema based on profile
+- **schema-diff**: Compare schema changes over time

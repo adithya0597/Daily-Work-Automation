@@ -1,4 +1,4 @@
-# quality-gate
+name: quality-gate
 version: "1.0.0"
 description: Run comprehensive quality checks - format, lint, type-check, and tests
 tags: [quality, lint, format, test, ci]
