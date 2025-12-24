@@ -1,33 +1,19 @@
 #!/usr/bin/env python3
-"""Thin wrapper script for refactor-skill skill."""
+"""Wrapper script for refactor-skill skill.
 
-import argparse
+This delegates to the main skillpack CLI. For direct usage:
+    skillpack refactor-skill --help
+"""
+
+import subprocess
 import sys
-from pathlib import Path
-
-SKILLPACK_ROOT = Path(__file__).parent.parent.parent.parent / "skillpack"
-if str(SKILLPACK_ROOT) not in sys.path:
-    sys.path.insert(0, str(SKILLPACK_ROOT.parent))
-
-from skillpack.skills.refactor_skill import refactor_skill_main
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Identify complexity hotspots and propose safe refactors")
-    parser.add_argument("--input", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=Path("./out/refactor_skill"))
-    args = parser.parse_args()
-
-    result = refactor_skill_main(
-        input_path=args.input,
-        output_dir=args.output_dir,
-    )
-
-    if result.get("success"):
-        print(f"✅ Generated files in {args.output_dir}")
-        return 0
-    print(f"❌ Error: {result.get('error')}")
-    return 1
+    """Run the refactor-skill skill via the CLI."""
+    # Pass all arguments through to the skillpack CLI
+    args = ["skillpack", "refactor-skill"] + sys.argv[1:]
+    return subprocess.call(args)
 
 
 if __name__ == "__main__":

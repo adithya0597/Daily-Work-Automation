@@ -103,6 +103,7 @@ def dag_authoring_main(
             content=dag_code,
             filename=filename,
             skill_name="dag_authoring",
+            output_dir=output_dir,
         )
 
         # Generate runbook snippet
@@ -111,6 +112,7 @@ def dag_authoring_main(
             content=runbook,
             filename=f"{dag_name}_runbook.md",
             skill_name="dag_authoring",
+            output_dir=output_dir,
         )
 
         return {

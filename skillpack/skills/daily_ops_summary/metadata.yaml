@@ -1,26 +1,44 @@
 name: daily-ops-summary
 version: "1.0.0"
-description: Generate daily status report from pipeline and system health
-tags: []
+description: Generate daily status report from pipeline and system health.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate daily-ops-summary output
+  - Create daily ops summary
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: daily-ops-summary
-  template: "skillpack daily-ops-summary --input {input_path}"
+  template: "skillpack daily-ops-summary --date {...} --metrics {...} --team {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  date:
+    type: string
+    required: false
+    cli_name: "--date"
+    description: "Date for summary (YYYY-MM-DD)"
+  metrics:
+    type: string
+    required: false
+    cli_name: "--metrics"
+    description: "Path to metrics YAML file"
+  team:
+    type: string
+    required: false
+    cli_name: "--team"
+    description: "Team name for the report"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/daily_ops_summary/"
   files:
-    - output.txt
+    - output.md

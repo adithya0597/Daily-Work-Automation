@@ -1,26 +1,77 @@
 name: baseline-model-factory
 version: "1.0.0"
-description: Build scikit-learn baselines with proper pipelines and config
-tags: []
+description: Build scikit-learn baselines with proper pipelines and config.
+tags:
+  - automation
+  - ml
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate baseline-model-factory output
+  - Create baseline model factory
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: baseline-model-factory
-  template: "skillpack baseline-model-factory --input {input_path}"
+  template: "skillpack baseline-model-factory --name {...} --task {...} --config {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Model name"
+  task:
+    type: string
+    required: false
+    cli_name: "--task"
+    description: "ML task type"
+  config:
+    type: string
+    required: false
+    cli_name: "--config"
+    description: "Path to model configuration YAML"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
+  data:
+    type: string
+    required: false
+    cli_name: "--data"
+    description: "Path to training data CSV"
+  output:
+    type: string
+    required: false
+    cli_name: "--output"
+    description: "Output directory"
+  model:
+    type: string
+    required: false
+    cli_name: "--model"
+    description: "Model to save as primary"
+  model:
+    type: string
+    required: false
+    cli_name: "--model"
+    description: "Path to saved model"
+  data:
+    type: string
+    required: false
+    cli_name: "--data"
+    description: "Path to evaluation data"
+  target:
+    type: string
+    required: false
+    cli_name: "--target"
+    description: "Target column name"
 
 output:
   directory: "./out/baseline_model_factory/"
   files:
-    - output.txt
+    - train.py
+    - config.yaml
+    - evaluate.py
+    - README.md

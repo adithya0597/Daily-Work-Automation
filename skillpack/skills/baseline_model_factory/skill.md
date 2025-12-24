@@ -1,45 +1,35 @@
 # Baseline Model Factory Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Build scikit-learn baselines with proper pipelines and config.
+- Automate baseline model factory generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Model name |
+| task | string | No | ML task type |
+| config | string | No | Path to model configuration YAML |
+| output-dir | string | No | Output directory |
+| data | string | No | Path to training data CSV |
+| output | string | No | Output directory |
+| model | string | No | Model to save as primary |
+| model | string | No | Path to saved model |
+| data | string | No | Path to evaluation data |
+| target | string | No | Target column name |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| train.py | file | Generated output |
+| config.yaml | file | Generated output |
+| evaluate.py | file | Generated output |
+| README.md | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack baseline-model-factory --input file.txt
+skillpack baseline-model-factory --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

@@ -1,26 +1,47 @@
 name: experiment-queue
 version: "1.0.0"
-description: Manage experiment queue with checkpointing and concurrency
-tags: []
+description: Manage experiment queue with checkpointing.
+tags:
+  - automation
+  - ml
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate experiment-queue output
+  - Create experiment queue
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: experiment-queue
-  template: "skillpack experiment-queue --input {input_path}"
+  template: "skillpack experiment-queue --name {...} --output-dir {...} --config {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Queue name"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
+  config:
+    type: string
+    required: false
+    cli_name: "--config"
+    description: "Resume from checkpoint"
+  status:
+    type: string
+    required: false
+    cli_name: "--status"
+    description: "Show queue status"
 
 output:
   directory: "./out/experiment_queue/"
   files:
-    - output.txt
+    - queue_manager.py
+    - run_queue.py
+    - experiments.yaml
+    - checkpoint.json

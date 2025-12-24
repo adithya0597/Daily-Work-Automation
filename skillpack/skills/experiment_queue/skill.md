@@ -1,45 +1,29 @@
 # Experiment Queue Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Manage experiment queue with checkpointing.
+- Automate experiment queue generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Queue name |
+| output-dir | string | No | Output directory |
+| config | string | No | Resume from checkpoint |
+| status | string | No | Show queue status |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| queue_manager.py | file | Generated output |
+| run_queue.py | file | Generated output |
+| experiments.yaml | file | Generated output |
+| checkpoint.json | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack experiment-queue --input file.txt
+skillpack experiment-queue --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

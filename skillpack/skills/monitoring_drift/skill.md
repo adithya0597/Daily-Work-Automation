@@ -1,45 +1,29 @@
 # Monitoring Drift Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Generate data and prediction drift detection templates.
+- Automate monitoring drift generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Model/dataset name |
+| type | string | No | Type of drift to monitor |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| data_drift.py | file | Generated output |
+| prediction_drift.py | file | Generated output |
+| alerting.yaml | file | Generated output |
+| dashboard.json | file | Generated output |
+| README.md | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack monitoring-drift --input file.txt
+skillpack monitoring-drift --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

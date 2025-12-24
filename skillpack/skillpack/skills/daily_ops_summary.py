@@ -85,19 +85,22 @@ def daily_ops_summary_main(
         # Generate summary report
         summary = generate_summary(date, metrics, team)
         summary_file = write_text(
-            content=summary, filename=f"ops_summary_{date}.md", skill_name="daily_ops_summary"
+            content=summary, filename=f"ops_summary_{date}.md", skill_name="daily_ops_summary",
+            output_dir=output_dir,
         )
 
         # Generate Slack message
         slack_msg = generate_slack_message(date, metrics, team)
         write_text(
-            content=slack_msg, filename=f"slack_message_{date}.txt", skill_name="daily_ops_summary"
+            content=slack_msg, filename=f"slack_message_{date}.txt", skill_name="daily_ops_summary",
+            output_dir=output_dir,
         )
 
         # Generate metrics YAML
         metrics_yaml = generate_metrics_yaml(date, metrics)
         write_text(
-            content=metrics_yaml, filename=f"metrics_{date}.yaml", skill_name="daily_ops_summary"
+            content=metrics_yaml, filename=f"metrics_{date}.yaml", skill_name="daily_ops_summary",
+            output_dir=output_dir,
         )
 
         return {

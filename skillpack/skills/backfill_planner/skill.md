@@ -1,45 +1,33 @@
 # Backfill Planner Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Generate backfill plans with date ranges and checkpoints.
+- Automate backfill planner generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Pipeline name |
+| start-date | string | No | Start date (YYYY-MM-DD) |
+| end-date | string | No | End date (YYYY-MM-DD) |
+| partition-by | string | No | Partition granularity |
+| batch-size | string | No | Batch size for parallel runs |
+| output-dir | string | No | Output directory |
+| batch | string | No | Run specific batch |
+| partition | string | No | Run specific partition |
+| resume | string | No | Resume from checkpoint |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| backfill_plan.md | file | Generated output |
+| backfill.py | file | Generated output |
+| checkpoint.json | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack backfill-planner --input file.txt
+skillpack backfill-planner --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

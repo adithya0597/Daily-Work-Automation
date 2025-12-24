@@ -65,22 +65,22 @@ def experiment_tracking_main(
         if tracker in ["mlflow", "both"]:
             mlflow_code = generate_mlflow_tracker(project_name)
             write_text(content=mlflow_code, filename="mlflow_tracker.py", skill_name="experiment_tracking")
-            files.append("mlflow_tracker.py")
+            files.append("mlflow_tracker.py", output_dir=output_dir)
 
         if tracker in ["wandb", "both"]:
             wandb_code = generate_wandb_tracker(project_name)
             write_text(content=wandb_code, filename="wandb_tracker.py", skill_name="experiment_tracking")
-            files.append("wandb_tracker.py")
+            files.append("wandb_tracker.py", output_dir=output_dir)
 
         # Generate unified interface
         interface = generate_tracking_interface(project_name)
         write_text(content=interface, filename="tracker.py", skill_name="experiment_tracking")
-        files.append("tracker.py")
+        files.append("tracker.py", output_dir=output_dir)
 
         # Generate config
         config = generate_tracking_config(project_name, tracker)
         write_text(content=config, filename="tracking_config.yaml", skill_name="experiment_tracking")
-        files.append("tracking_config.yaml")
+        files.append("tracking_config.yaml", output_dir=output_dir)
 
         return {
             "success": True,

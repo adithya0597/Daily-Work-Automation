@@ -1,26 +1,50 @@
 name: notebook-to-package
 version: "1.0.0"
-description: Convert Jupyter notebooks to Python packages
-tags: []
+description: Convert Jupyter notebooks to Python packages.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate notebook-to-package output
+  - Create notebook to package
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: notebook-to-package
-  template: "skillpack notebook-to-package --input {input_path}"
+  template: "skillpack notebook-to-package --notebook {...} --name {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
+  notebook:
+    type: string
+    required: false
+    cli_name: "--notebook"
+    description: "Path to Jupyter notebook (.ipynb)"
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Package name (defaults to notebook name)"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
+  input:
+    type: string
+    required: false
     cli_name: "--input"
-    description: Input file path
+    description: "Input file path"
+  output:
+    type: string
+    required: false
+    cli_name: "--output"
+    description: "Output directory"
 
 output:
   directory: "./out/notebook_to_package/"
   files:
-    - output.txt
+    - pyproject.toml
+    - README.md

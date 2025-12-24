@@ -84,27 +84,27 @@ def cost_regression_main(
         # Generate analyzer
         analyzer = generate_analyzer(project_name)
         write_text(content=analyzer, filename="cost_analyzer.py", skill_name="cost_regression")
-        files.append("cost_analyzer.py")
+        files.append("cost_analyzer.py", output_dir=output_dir)
 
         # Generate performance analyzer
         perf_analyzer = generate_perf_analyzer(project_name)
         write_text(content=perf_analyzer, filename="perf_analyzer.py", skill_name="cost_regression")
-        files.append("perf_analyzer.py")
+        files.append("perf_analyzer.py", output_dir=output_dir)
 
         # Generate CI integration
         ci_check = generate_ci_check(project_name, threshold)
         write_text(content=ci_check, filename="check_regression.py", skill_name="cost_regression")
-        files.append("check_regression.py")
+        files.append("check_regression.py", output_dir=output_dir)
 
         # Generate GitHub Action
         gh_action = generate_github_action(project_name)
         write_text(content=gh_action, filename="cost-check.yml", skill_name="cost_regression")
-        files.append("cost-check.yml")
+        files.append("cost-check.yml", output_dir=output_dir)
 
         # Generate report
         report = generate_report(project_name, metrics, threshold)
         write_text(content=report, filename="regression_report.md", skill_name="cost_regression")
-        files.append("regression_report.md")
+        files.append("regression_report.md", output_dir=output_dir)
 
         return {
             "success": True,

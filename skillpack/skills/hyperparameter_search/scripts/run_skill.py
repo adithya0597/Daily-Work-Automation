@@ -1,33 +1,19 @@
 #!/usr/bin/env python3
-"""Thin wrapper script for hyperparameter-search skill."""
+"""Wrapper script for hyperparameter-search skill.
 
-import argparse
+This delegates to the main skillpack CLI. For direct usage:
+    skillpack hyperparameter-search --help
+"""
+
+import subprocess
 import sys
-from pathlib import Path
-
-SKILLPACK_ROOT = Path(__file__).parent.parent.parent.parent / "skillpack"
-if str(SKILLPACK_ROOT) not in sys.path:
-    sys.path.insert(0, str(SKILLPACK_ROOT.parent))
-
-from skillpack.skills.hyperparameter_search import hyperparameter_search_main
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Optuna or Ray Tune sweep templates")
-    parser.add_argument("--input", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=Path("./out/hyperparameter_search"))
-    args = parser.parse_args()
-
-    result = hyperparameter_search_main(
-        input_path=args.input,
-        output_dir=args.output_dir,
-    )
-
-    if result.get("success"):
-        print(f"✅ Generated files in {args.output_dir}")
-        return 0
-    print(f"❌ Error: {result.get('error')}")
-    return 1
+    """Run the hyperparameter-search skill via the CLI."""
+    # Pass all arguments through to the skillpack CLI
+    args = ["skillpack", "hyperparameter-search"] + sys.argv[1:]
+    return subprocess.call(args)
 
 
 if __name__ == "__main__":

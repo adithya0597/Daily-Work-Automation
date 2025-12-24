@@ -1,45 +1,24 @@
 # Test Writer Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Generate pytest tests from code.
+- Automate test writer generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| source | string | No | Path to Python source file |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| conftest.py | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack test-writer --input file.txt
+skillpack test-writer --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

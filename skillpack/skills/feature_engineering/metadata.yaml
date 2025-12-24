@@ -1,26 +1,36 @@
 name: feature-engineering
 version: "1.0.0"
-description: Suggest and generate feature transformations per column type
-tags: []
+description: Suggest and generate feature transformations per column type.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate feature-engineering output
+  - Create feature engineering
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: feature-engineering
-  template: "skillpack feature-engineering --input {input_path}"
+  template: "skillpack feature-engineering --config {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  config:
+    type: string
+    required: false
+    cli_name: "--config"
+    description: "Path to column configuration YAML"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/feature_engineering/"
   files:
-    - output.txt
+    - features.py
+    - transformations.md
+    - feature_config.yaml

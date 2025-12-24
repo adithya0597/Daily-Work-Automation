@@ -1,39 +1,34 @@
 name: project-scaffolding
 version: "1.0.0"
-description: Generate a complete Python project skeleton with modern best practices
-tags: [scaffolding, project, python, cli]
+description: Generate new project skeletons.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "create project"
-  - "new project"
-  - "scaffold project"
-  - "start project"
+  - Generate project-scaffolding output
+  - Create project scaffolding
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: project-scaffolding
-  template: "skillpack project-scaffolding --name {name} --description {description}"
+  template: "skillpack project-scaffolding --name {...} --description {...}"
 
 arguments:
   name:
     type: string
-    required: true
+    required: false
     cli_name: "--name"
-    description: Project name (alphanumeric and hyphens)
+    description: "Name of the project to create"
   description:
     type: string
     required: false
     cli_name: "--description"
-    default: "A new Python project"
-    description: Project description
+    description: "Project description (default: "
 
 output:
-  directory: "./out/project_scaffolding/{name}/"
+  directory: "./out/project_scaffolding/"
   files:
-    - pyproject.toml
-    - README.md
-    - .gitignore
-    - src/__init__.py
-    - tests/test_main.py
+    - output.md

@@ -75,17 +75,17 @@ def iac_boilerplate_main(
         # Generate main.tf
         main_tf = generate_main_tf(project_name, cloud)
         write_text(content=main_tf, filename="main.tf", skill_name="iac_boilerplate")
-        files.append("main.tf")
+        files.append("main.tf", output_dir=output_dir)
 
         # Generate variables.tf
         variables = generate_variables(project_name, cloud)
         write_text(content=variables, filename="variables.tf", skill_name="iac_boilerplate")
-        files.append("variables.tf")
+        files.append("variables.tf", output_dir=output_dir)
 
         # Generate outputs.tf
         outputs = generate_outputs(cloud, resources)
         write_text(content=outputs, filename="outputs.tf", skill_name="iac_boilerplate")
-        files.append("outputs.tf")
+        files.append("outputs.tf", output_dir=output_dir)
 
         # Generate resource modules
         for resource in resources:
@@ -95,18 +95,19 @@ def iac_boilerplate_main(
                 filename="main.tf",
                 skill_name="iac_boilerplate",
                 subdir=f"modules/{resource}",
+                output_dir=output_dir,
             )
             files.append(f"modules/{resource}/main.tf")
 
         # Generate terraform.tfvars.example
         tfvars = generate_tfvars_example(project_name, cloud)
         write_text(content=tfvars, filename="terraform.tfvars.example", skill_name="iac_boilerplate")
-        files.append("terraform.tfvars.example")
+        files.append("terraform.tfvars.example", output_dir=output_dir)
 
         # Generate README
         readme = generate_readme(project_name, cloud, resources)
         write_text(content=readme, filename="README.md", skill_name="iac_boilerplate")
-        files.append("README.md")
+        files.append("README.md", output_dir=output_dir)
 
         return {
             "success": True,

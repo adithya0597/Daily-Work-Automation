@@ -1,26 +1,42 @@
 name: experiment-tracking
 version: "1.0.0"
-description: Standardize MLflow or W&B experiment tracking conventions
-tags: []
+description: Generate MLflow or W&B tracking boilerplate.
+tags:
+  - automation
+  - ml
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate experiment-tracking output
+  - Create experiment tracking
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: experiment-tracking
-  template: "skillpack experiment-tracking --input {input_path}"
+  template: "skillpack experiment-tracking --name {...} --tracker {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Project name"
+  tracker:
+    type: string
+    required: false
+    cli_name: "--tracker"
+    description: "Tracking framework"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/experiment_tracking/"
   files:
-    - output.txt
+    - mlflow_tracker.py
+    - wandb_tracker.py
+    - tracker.py
+    - tracking_config.yaml

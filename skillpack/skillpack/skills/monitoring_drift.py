@@ -65,27 +65,27 @@ def monitoring_drift_main(
         if drift_type in ["data", "both"]:
             data_drift = generate_data_drift_monitor(model_name)
             write_text(content=data_drift, filename="data_drift.py", skill_name="monitoring_drift")
-            files.append("data_drift.py")
+            files.append("data_drift.py", output_dir=output_dir)
 
         if drift_type in ["prediction", "both"]:
             pred_drift = generate_prediction_drift_monitor(model_name)
             write_text(content=pred_drift, filename="prediction_drift.py", skill_name="monitoring_drift")
-            files.append("prediction_drift.py")
+            files.append("prediction_drift.py", output_dir=output_dir)
 
         # Generate alerting config
         alerting = generate_alerting_config(model_name)
         write_text(content=alerting, filename="alerting.yaml", skill_name="monitoring_drift")
-        files.append("alerting.yaml")
+        files.append("alerting.yaml", output_dir=output_dir)
 
         # Generate dashboard template
         dashboard = generate_dashboard(model_name)
         write_text(content=dashboard, filename="dashboard.json", skill_name="monitoring_drift")
-        files.append("dashboard.json")
+        files.append("dashboard.json", output_dir=output_dir)
 
         # Generate README
         readme = generate_readme(model_name, drift_type)
         write_text(content=readme, filename="README.md", skill_name="monitoring_drift")
-        files.append("README.md")
+        files.append("README.md", output_dir=output_dir)
 
         return {
             "success": True,

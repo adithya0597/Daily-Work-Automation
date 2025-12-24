@@ -1,26 +1,58 @@
 name: containerization
 version: "1.0.0"
-description: Generate Dockerfile and compose configs for services
-tags: []
+description: Generate Dockerfile and compose configs for services.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate containerization output
+  - Create containerization
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: containerization
-  template: "skillpack containerization --input {input_path}"
+  template: "skillpack containerization --name {...} --base {...} --runtime {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Service name"
+  base:
+    type: string
+    required: false
+    cli_name: "--base"
+    description: "Base image type"
+  runtime:
+    type: string
+    required: false
+    cli_name: "--runtime"
+    description: "Runtime type"
+  port:
+    type: string
+    required: false
+    cli_name: "--port"
+    description: "Exposed port"
+  compose:
+    type: string
+    required: false
+    cli_name: "--compose"
+    description: "Generate docker-compose.yml"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/containerization/"
   files:
-    - output.txt
+    - Dockerfile
+    - .dockerignore
+    - docker-compose.yml
+    - Makefile
+    - DOCKER_README.md

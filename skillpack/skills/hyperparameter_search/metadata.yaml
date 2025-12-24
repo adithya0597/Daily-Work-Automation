@@ -1,26 +1,48 @@
 name: hyperparameter-search
 version: "1.0.0"
-description: Generate Optuna or Ray Tune sweep templates
-tags: []
+description: Generate Optuna or Ray Tune sweep templates.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate hyperparameter-search output
+  - Create hyperparameter search
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: hyperparameter-search
-  template: "skillpack hyperparameter-search --input {input_path}"
+  template: "skillpack hyperparameter-search --name {...} --framework {...} --model {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Experiment name"
+  framework:
+    type: string
+    required: false
+    cli_name: "--framework"
+    description: "HPO framework"
+  model:
+    type: string
+    required: false
+    cli_name: "--model"
+    description: "Model type"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/hyperparameter_search/"
   files:
-    - output.txt
+    - optuna_sweep.py
+    - ray_tune_sweep.py
+    - wandb_sweep.py
+    - sweep_config.yaml
+    - search_space.yaml

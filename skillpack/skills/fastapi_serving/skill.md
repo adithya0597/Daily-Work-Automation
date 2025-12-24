@@ -1,45 +1,29 @@
 # Fastapi Serving Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Wrap models in FastAPI services with validation and health endpoints.
+- Automate fastapi serving generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Model/service name |
+| type | string | No | Model type |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| main.py | file | Generated output |
+| schemas.py | file | Generated output |
+| Dockerfile | file | Generated output |
+| requirements.txt | file | Generated output |
+| test_api.py | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack fastapi-serving --input file.txt
+skillpack fastapi-serving --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

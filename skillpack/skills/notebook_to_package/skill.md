@@ -1,45 +1,28 @@
 # Notebook To Package Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Convert Jupyter notebooks to Python packages.
+- Automate notebook to package generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| notebook | string | No | Path to Jupyter notebook (.ipynb) |
+| name | string | No | Package name (defaults to notebook name) |
+| output-dir | string | No | Output directory |
+| input | string | No | Input file path |
+| output | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| pyproject.toml | file | Generated output |
+| README.md | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack notebook-to-package --input file.txt
+skillpack notebook-to-package --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

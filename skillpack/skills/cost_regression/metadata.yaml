@@ -1,26 +1,48 @@
 name: cost-regression
 version: "1.0.0"
-description: Detect cost and performance regressions in pipelines
-tags: []
+description: Detect cost and performance regression in infrastructure.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate cost-regression output
+  - Create cost regression
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: cost-regression
-  template: "skillpack cost-regression --input {input_path}"
+  template: "skillpack cost-regression --name {...} --metrics {...} --threshold {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Project name"
+  metrics:
+    type: string
+    required: false
+    cli_name: "--metrics"
+    description: "Path to metrics YAML file"
+  threshold:
+    type: string
+    required: false
+    cli_name: "--threshold"
+    description: "Regression threshold (default: 10%)"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/cost_regression/"
   files:
-    - output.txt
+    - cost_analyzer.py
+    - perf_analyzer.py
+    - check_regression.py
+    - cost-check.yml
+    - regression_report.md

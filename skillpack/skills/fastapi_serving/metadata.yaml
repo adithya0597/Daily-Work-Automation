@@ -1,26 +1,43 @@
 name: fastapi-serving
 version: "1.0.0"
-description: Wrap models in FastAPI services with validation and health endpoints
-tags: []
+description: Wrap models in FastAPI services with validation and health endpoints.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate fastapi-serving output
+  - Create fastapi serving
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: fastapi-serving
-  template: "skillpack fastapi-serving --input {input_path}"
+  template: "skillpack fastapi-serving --name {...} --type {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Model/service name"
+  type:
+    type: string
+    required: false
+    cli_name: "--type"
+    description: "Model type"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/fastapi_serving/"
   files:
-    - output.txt
+    - main.py
+    - schemas.py
+    - Dockerfile
+    - requirements.txt
+    - test_api.py

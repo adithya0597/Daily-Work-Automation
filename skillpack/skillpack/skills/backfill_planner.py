@@ -78,17 +78,20 @@ def backfill_planner_main(
         # Generate plan markdown
         plan_md = generate_plan_md(pipeline_name, partitions, batches, start_date, end_date)
         plan_file = write_text(
-            content=plan_md, filename="backfill_plan.md", skill_name="backfill_planner"
+            content=plan_md, filename="backfill_plan.md", skill_name="backfill_planner",
+            output_dir=output_dir
         )
 
         # Generate runner script
         runner = generate_runner_script(pipeline_name, partitions, batches)
-        write_text(content=runner, filename="backfill.py", skill_name="backfill_planner")
+        write_text(content=runner, filename="backfill.py", skill_name="backfill_planner",
+                   output_dir=output_dir)
 
         # Generate checkpoint file
         checkpoint = generate_checkpoint_template(partitions)
         write_text(
-            content=checkpoint, filename="checkpoint.json", skill_name="backfill_planner"
+            content=checkpoint, filename="checkpoint.json", skill_name="backfill_planner",
+            output_dir=output_dir
         )
 
         return {

@@ -1,31 +1,67 @@
 name: git-workflow
 version: "1.0.0"
-description: Create feature branches, format commits, and generate PR templates
-tags: [git, workflow, branch, commit, pr]
+description: Create feature branches, format commits, and generate PR templates.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "create branch"
-  - "format commit"
-  - "generate pr"
-  - "git workflow"
+  - Generate git-workflow output
+  - Create git workflow
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: git-workflow
-  template: "skillpack git-workflow {action} --description {description}"
+  template: "skillpack git-workflow --type {...} --description {...} --issue {...}"
 
 arguments:
-  action:
-    type: enum
-    required: true
-    values: [branch, commit, pr]
-    description: Action to perform
+  type:
+    type: string
+    required: false
+    cli_name: "--type"
+    description: "Branch type"
   description:
     type: string
-    required: true
-    description: Description for branch/commit/PR
+    required: false
+    cli_name: "--description"
+    description: "Brief description (will be slugified)"
+  issue:
+    type: string
+    required: false
+    cli_name: "--issue"
+    description: "Issue/ticket number (e.g., JIRA-123)"
+  type:
+    type: string
+    required: false
+    cli_name: "--type"
+    description: "Commit type"
+  scope:
+    type: string
+    required: false
+    cli_name: "--scope"
+    description: "Scope of the change"
+  description:
+    type: string
+    required: false
+    cli_name: "--description"
+    description: "Commit description"
+  breaking:
+    type: string
+    required: false
+    cli_name: "--breaking"
+    description: "Mark as breaking change"
+  title:
+    type: string
+    required: false
+    cli_name: "--title"
+    description: "PR title"
+  branch:
+    type: string
+    required: false
+    cli_name: "--branch"
+    description: "Branch name (defaults to current)"
 
 output:
   directory: "./out/git_workflow/"

@@ -1,45 +1,26 @@
 # Feature Engineering Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Suggest and generate feature transformations per column type.
+- Automate feature engineering generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| config | string | No | Path to column configuration YAML |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| features.py | file | Generated output |
+| transformations.md | file | Generated output |
+| feature_config.yaml | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack feature-engineering --input file.txt
+skillpack feature-engineering --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

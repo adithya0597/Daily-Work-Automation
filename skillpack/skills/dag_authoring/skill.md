@@ -1,45 +1,27 @@
 # Dag Authoring Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Generate DAG code for Airflow, Prefect, or Dagster.
+- Automate dag authoring generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | DAG/Flow name |
+| framework | string | No | Target orchestration framework |
+| config | string | No | Path to pipeline configuration YAML |
+| schedule | string | No | Schedule expression (e.g., @daily, 0 0 * * *) |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| output.md | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack dag-authoring --input file.txt
+skillpack dag-authoring --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

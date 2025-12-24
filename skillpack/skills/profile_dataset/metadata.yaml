@@ -1,34 +1,29 @@
 name: profile-dataset
 version: "1.0.0"
-description: Profile CSV datasets with comprehensive statistics and data quality insights
-tags: [data, csv, profiling, analysis, statistics]
+description: Profile CSV datasets.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "analyze data"
-  - "profile csv"
-  - "data quality check"
-  - "explore dataset"
-  - "understand data"
+  - Generate profile-dataset output
+  - Create profile dataset
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: profile-dataset
-  template: "skillpack profile-dataset --csv {csv_path}"
+  template: "skillpack profile-dataset --csv {...}"
 
 arguments:
-  csv_path:
-    type: file_path
-    required: true
+  csv:
+    type: string
+    required: false
     cli_name: "--csv"
-    description: Path to CSV file to profile
-    validation:
-      file_must_exist: true
-      extensions: [".csv"]
+    description: "Path to the CSV file to profile"
 
 output:
   directory: "./out/profile_dataset/"
   files:
-    - profile.md
-    - profile.json
+    - output.md

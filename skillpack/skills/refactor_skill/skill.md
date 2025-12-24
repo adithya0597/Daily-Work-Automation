@@ -1,45 +1,26 @@
 # Refactor Skill Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Identify complexity hotspots and propose safe refactors.
+- Automate refactor skill generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| source | string | No | Path to Python source file or directory |
+| threshold | string | No | Complexity threshold for flagging (default: 10) |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| refactor_report.md | file | Generated output |
+| metrics.json | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack refactor-skill --input file.txt
+skillpack refactor-skill --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

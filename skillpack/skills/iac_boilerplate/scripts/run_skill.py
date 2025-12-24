@@ -1,33 +1,19 @@
 #!/usr/bin/env python3
-"""Thin wrapper script for iac-boilerplate skill."""
+"""Wrapper script for iac-boilerplate skill.
 
-import argparse
+This delegates to the main skillpack CLI. For direct usage:
+    skillpack iac-boilerplate --help
+"""
+
+import subprocess
 import sys
-from pathlib import Path
-
-SKILLPACK_ROOT = Path(__file__).parent.parent.parent.parent / "skillpack"
-if str(SKILLPACK_ROOT) not in sys.path:
-    sys.path.insert(0, str(SKILLPACK_ROOT.parent))
-
-from skillpack.skills.iac_boilerplate import iac_boilerplate_main
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Create Terraform modules for cloud infrastructure")
-    parser.add_argument("--input", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=Path("./out/iac_boilerplate"))
-    args = parser.parse_args()
-
-    result = iac_boilerplate_main(
-        input_path=args.input,
-        output_dir=args.output_dir,
-    )
-
-    if result.get("success"):
-        print(f"✅ Generated files in {args.output_dir}")
-        return 0
-    print(f"❌ Error: {result.get('error')}")
-    return 1
+    """Run the iac-boilerplate skill via the CLI."""
+    # Pass all arguments through to the skillpack CLI
+    args = ["skillpack", "iac-boilerplate"] + sys.argv[1:]
+    return subprocess.call(args)
 
 
 if __name__ == "__main__":

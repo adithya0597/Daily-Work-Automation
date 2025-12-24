@@ -1,26 +1,40 @@
 name: refactor-skill
 version: "1.0.0"
-description: Identify complexity hotspots and propose safe refactors
-tags: []
+description: Identify complexity hotspots and propose safe refactors.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate refactor-skill output
+  - Create refactor skill
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: refactor-skill
-  template: "skillpack refactor-skill --input {input_path}"
+  template: "skillpack refactor-skill --source {...} --threshold {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  source:
+    type: string
+    required: false
+    cli_name: "--source"
+    description: "Path to Python source file or directory"
+  threshold:
+    type: string
+    required: false
+    cli_name: "--threshold"
+    description: "Complexity threshold for flagging (default: 10)"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/refactor_skill/"
   files:
-    - output.txt
+    - refactor_report.md
+    - metrics.json

@@ -28,6 +28,7 @@ def write_text(
     skill_name: str,
     subdir: str | None = None,
     base_dir: str = "./out",
+    output_dir: Path | None = None,
 ) -> Path:
     """Write text content to a file in the skill's output directory.
 
@@ -37,16 +38,28 @@ def write_text(
         skill_name: Name of the skill.
         subdir: Optional subdirectory within the skill's output directory.
         base_dir: Base output directory.
+        output_dir: If provided, use this directory directly instead of computing from skill_name.
 
     Returns:
         Path to the written file.
     """
-    output_dir = get_output_dir(skill_name, base_dir)
+    # Use provided output_dir or compute from skill_name
+    if output_dir is not None:
+        target_dir = Path(output_dir)
+    else:
+        target_dir = get_output_dir(skill_name, base_dir)
+    
     if subdir:
-        output_dir = output_dir / subdir
-        output_dir.mkdir(parents=True, exist_ok=True)
+        target_dir = target_dir / subdir
+    
+    # Ensure target directory exists
+    target_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / filename
+    output_path = target_dir / filename
+    
+    # Ensure parent directories exist (for nested filenames like "pkg/__init__.py")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
     output_path.write_text(content, encoding="utf-8")
     return output_path
 
@@ -57,6 +70,7 @@ def write_json(
     skill_name: str,
     subdir: str | None = None,
     base_dir: str = "./out",
+    output_dir: Path | None = None,
     indent: int = 2,
 ) -> Path:
     """Write JSON data to a file in the skill's output directory.
@@ -67,13 +81,14 @@ def write_json(
         skill_name: Name of the skill.
         subdir: Optional subdirectory within the skill's output directory.
         base_dir: Base output directory.
+        output_dir: If provided, use this directory directly instead of computing from skill_name.
         indent: JSON indentation level.
 
     Returns:
         Path to the written file.
     """
     content = json.dumps(data, indent=indent, ensure_ascii=False, sort_keys=True)
-    return write_text(content, filename, skill_name, subdir, base_dir)
+    return write_text(content, filename, skill_name, subdir, base_dir, output_dir)
 
 
 def write_yaml(
@@ -82,6 +97,7 @@ def write_yaml(
     skill_name: str,
     subdir: str | None = None,
     base_dir: str = "./out",
+    output_dir: Path | None = None,
 ) -> Path:
     """Write YAML data to a file in the skill's output directory.
 
@@ -91,9 +107,10 @@ def write_yaml(
         skill_name: Name of the skill.
         subdir: Optional subdirectory within the skill's output directory.
         base_dir: Base output directory.
+        output_dir: If provided, use this directory directly instead of computing from skill_name.
 
     Returns:
         Path to the written file.
     """
     content = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=True)
-    return write_text(content, filename, skill_name, subdir, base_dir)
+    return write_text(content, filename, skill_name, subdir, base_dir, output_dir)

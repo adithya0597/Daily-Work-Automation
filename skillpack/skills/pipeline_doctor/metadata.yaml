@@ -1,26 +1,40 @@
 name: pipeline-doctor
 version: "1.0.0"
-description: Diagnose pipeline issues from logs and configs
-tags: []
+description: Diagnose pipeline issues from logs and configs.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate pipeline-doctor output
+  - Create pipeline doctor
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: pipeline-doctor
-  template: "skillpack pipeline-doctor --input {input_path}"
+  template: "skillpack pipeline-doctor --logs {...} --config {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  logs:
+    type: string
+    required: false
+    cli_name: "--logs"
+    description: "Path to log file or directory"
+  config:
+    type: string
+    required: false
+    cli_name: "--config"
+    description: "Path to pipeline config (optional)"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/pipeline_doctor/"
   files:
-    - output.txt
+    - diagnosis.md
+    - remediation.md

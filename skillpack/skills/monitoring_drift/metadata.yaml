@@ -1,26 +1,43 @@
 name: monitoring-drift
 version: "1.0.0"
-description: Templates for data and prediction drift detection
-tags: []
+description: Generate data and prediction drift detection templates.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate monitoring-drift output
+  - Create monitoring drift
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: monitoring-drift
-  template: "skillpack monitoring-drift --input {input_path}"
+  template: "skillpack monitoring-drift --name {...} --type {...} --output-dir {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Model/dataset name"
+  type:
+    type: string
+    required: false
+    cli_name: "--type"
+    description: "Type of drift to monitor"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/monitoring_drift/"
   files:
-    - output.txt
+    - data_drift.py
+    - prediction_drift.py
+    - alerting.yaml
+    - dashboard.json
+    - README.md

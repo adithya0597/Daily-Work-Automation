@@ -1,70 +1,23 @@
 # Data Quality Skill
 
 ## When to Use
-- Creating data validation rules
-- Before ETL pipelines
-- After profiling a dataset
+- Generate Pandera validation schemas.
+- Automate data quality generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| config_path | file_path | No | Schema configuration YAML |
+| config | string | No | Path to config file (YAML or JSON). If not provided, generates an example. |
 
 ## Outputs
-- `./out/data_quality/schema.py` - Pandera schema definition
-- `./out/data_quality/run_validation.py` - Validation runner
+| File | Format | Description |
+|------|--------|-------------|
+| output.md | file | Generated output |
 
-## Procedure
-1. **Load config** - Parse YAML/JSON or use example
-2. **Generate schema** - Create Pandera DataFrameSchema
-3. **Create runner** - Script to validate CSV files
-4. **Write outputs** - Save to ./out/
-
-## Guardrails
-
-### Allowed
-- Read config file
-- Generate Python code
-- Write to ./out/data_quality/
-
-### Forbidden
-- Execute generated schema
-- Access data files directly
-- Modify input config
-- Delete any files
-
-## Preconditions
-- [ ] Config file is valid YAML (if provided)
-- [ ] pandera is available
-
-## Postconditions
-- [ ] schema.py is valid Python
-- [ ] run_validation.py is executable
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| ConfigError | Invalid YAML | Fix YAML syntax |
-| ColumnNotFound | Column in config missing | Verify config matches data |
-
-## Config Schema
-```yaml
-columns:
-  - name: column_name
-    dtype: string|integer|float|boolean
-    nullable: true|false
-    unique: true|false
-    checks:
-      - min_value: 0
-      - max_value: 100
-      - isin: [a, b, c]
-```
-
-## Examples
+## Example
 ```bash
-skillpack data-quality                        # Use example config
-skillpack data-quality --config schema.yaml   # Use custom config
+skillpack data-quality --name example
 ```
 
 ## Related Skills
-- **profile-dataset**: Generate profile to inform schema
+- Check skillpack --help for related skills

@@ -1,26 +1,47 @@
 name: evaluation-report
 version: "1.0.0"
-description: Generate metrics, calibration, and slice analysis reports
-tags: []
+description: Generate model evaluation reports with metrics and plots.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate evaluation-report output
+  - Create evaluation report
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: evaluation-report
-  template: "skillpack evaluation-report --input {input_path}"
+  template: "skillpack evaluation-report --name {...} --task {...} --metrics {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Model name"
+  task:
+    type: string
+    required: false
+    cli_name: "--task"
+    description: "Task type"
+  metrics:
+    type: string
+    required: false
+    cli_name: "--metrics"
+    description: "Path to metrics YAML file"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/evaluation_report/"
   files:
-    - output.txt
+    - evaluation_report.md
+    - evaluate.py
+    - plot_results.py
+    - metrics.yaml

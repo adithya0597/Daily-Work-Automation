@@ -1,45 +1,30 @@
 # Iac Boilerplate Skill
 
 ## When to Use
-- TODO: Add trigger conditions
+- Generate Terraform modules for cloud infrastructure.
+- Automate iac boilerplate generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| input_path | file_path | Yes | Input file |
+| name | string | No | Project name |
+| cloud | string | No | Cloud provider |
+| resources | string | No | Comma-separated resources to generate |
+| output-dir | string | No | Output directory |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.txt | text | Output file |
+| main.tf | file | Generated output |
+| variables.tf | file | Generated output |
+| outputs.tf | file | Generated output |
+| main.tf | file | Generated output |
+| terraform.tfvars.example | file | Generated output |
 
-## Procedure
-1. **Step 1** - TODO
-2. **Step 2** - TODO
-
-## Guardrails
-
-### Allowed
-- TODO: What the skill CAN do
-
-### Forbidden
-- TODO: What the skill MUST NOT do
-
-## Preconditions
-- [ ] Input file exists
-
-## Postconditions
-- [ ] Output file created
-
-## Error Handling
-| Error | Condition | Recovery |
-|-------|-----------|----------|
-| FileNotFoundError | Input missing | Check path |
-
-## Examples
+## Example
 ```bash
-skillpack iac-boilerplate --input file.txt
+skillpack iac-boilerplate --name example
 ```
 
 ## Related Skills
-- TODO
+- Check skillpack --help for related skills

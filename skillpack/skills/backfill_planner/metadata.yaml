@@ -1,26 +1,71 @@
 name: backfill-planner
 version: "1.0.0"
-description: Generate backfill plans with date ranges and checkpoints
-tags: []
+description: Generate backfill plans with date ranges and checkpoints.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate backfill-planner output
+  - Create backfill planner
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: backfill-planner
-  template: "skillpack backfill-planner --input {input_path}"
+  template: "skillpack backfill-planner --name {...} --start-date {...} --end-date {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Pipeline name"
+  start_date:
+    type: string
+    required: false
+    cli_name: "--start-date"
+    description: "Start date (YYYY-MM-DD)"
+  end_date:
+    type: string
+    required: false
+    cli_name: "--end-date"
+    description: "End date (YYYY-MM-DD)"
+  partition_by:
+    type: string
+    required: false
+    cli_name: "--partition-by"
+    description: "Partition granularity"
+  batch_size:
+    type: string
+    required: false
+    cli_name: "--batch-size"
+    description: "Batch size for parallel runs"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
+  batch:
+    type: string
+    required: false
+    cli_name: "--batch"
+    description: "Run specific batch"
+  partition:
+    type: string
+    required: false
+    cli_name: "--partition"
+    description: "Run specific partition"
+  resume:
+    type: string
+    required: false
+    cli_name: "--resume"
+    description: "Resume from checkpoint"
 
 output:
   directory: "./out/backfill_planner/"
   files:
-    - output.txt
+    - backfill_plan.md
+    - backfill.py
+    - checkpoint.json

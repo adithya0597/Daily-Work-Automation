@@ -1,26 +1,48 @@
 name: iac-boilerplate
 version: "1.0.0"
-description: Create Terraform modules for cloud infrastructure
-tags: []
+description: Generate Terraform modules for cloud infrastructure.
+tags:
+  - automation
+  - data
 
 triggers:
-  - "TODO: add natural language triggers"
+  - Generate iac-boilerplate output
+  - Create iac boilerplate
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: iac-boilerplate
-  template: "skillpack iac-boilerplate --input {input_path}"
+  template: "skillpack iac-boilerplate --name {...} --cloud {...} --resources {...}"
 
 arguments:
-  input_path:
-    type: file_path
-    required: true
-    cli_name: "--input"
-    description: Input file path
+  name:
+    type: string
+    required: false
+    cli_name: "--name"
+    description: "Project name"
+  cloud:
+    type: string
+    required: false
+    cli_name: "--cloud"
+    description: "Cloud provider"
+  resources:
+    type: string
+    required: false
+    cli_name: "--resources"
+    description: "Comma-separated resources to generate"
+  output_dir:
+    type: string
+    required: false
+    cli_name: "--output-dir"
+    description: "Output directory"
 
 output:
   directory: "./out/iac_boilerplate/"
   files:
-    - output.txt
+    - main.tf
+    - variables.tf
+    - outputs.tf
+    - main.tf
+    - terraform.tfvars.example
