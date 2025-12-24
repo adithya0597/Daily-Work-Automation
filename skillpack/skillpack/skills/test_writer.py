@@ -1,7 +1,11 @@
-"""test-writer - Generate pytest fixtures and unit tests from code"""
+"""test-writer - Generate pytest tests from code."""
 
 import argparse
+import ast
+import re
+from datetime import datetime
 from pathlib import Path
+from textwrap import dedent, indent
 from typing import Any
 
 from skillpack.utils.output import get_output_dir, write_text
@@ -10,11 +14,14 @@ from skillpack.utils.output import get_output_dir, write_text
 def handler(args: argparse.Namespace) -> int:
     """CLI handler for test-writer."""
     result = test_writer_main(
-        input_path=args.input,
+        source_path=args.source,
+        output_dir=args.output_dir,
     )
 
     if result.get("success"):
-        print(f"✅ Output written to {result['output_dir']}")
+        print(f"✅ Generated tests in {result['output_dir']}")
+        print(f"   Functions: {result.get('function_count', 0)}")
+        print(f"   Classes: {result.get('class_count', 0)}")
         return 0
     print(f"❌ Error: {result.get('error')}")
     return 1
@@ -24,42 +31,309 @@ def register_parser(subparsers: Any) -> None:
     """Register the test-writer subcommand."""
     parser = subparsers.add_parser(
         "test-writer",
-        help="Generate pytest fixtures and unit tests from code",
+        help="Generate pytest tests from code",
     )
     parser.add_argument(
-        "--input",
+        "--source",
         type=Path,
         required=True,
-        help="Input file path",
+        help="Path to Python source file",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("./out/test_writer"),
+        help="Output directory",
     )
     parser.set_defaults(handler=handler)
 
 
 def test_writer_main(
-    input_path: Path,
+    source_path: Path,
     output_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Main implementation for test-writer."""
+    """Generate pytest tests from Python source code."""
     if output_dir is None:
         output_dir = get_output_dir("test_writer")
+    else:
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not source_path.exists():
+        return {"success": False, "error": f"Source file not found: {source_path}"}
 
     try:
-        # Validate input
-        if not input_path.exists():
-            return {"success": False, "error": f"File not found: {input_path}"}
+        source_code = source_path.read_text()
+        tree = ast.parse(source_code)
 
-        # TODO: Implement skill logic
-        content = input_path.read_text()
+        # Extract functions and classes
+        functions = []
+        classes = []
 
-        # Write output
-        output_file = output_dir / "output.txt"
-        write_text(content=f"Processed: {content}", filename="output.txt", skill_name="test_writer")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                if not node.name.startswith("_"):
+                    functions.append(extract_function_info(node))
+            elif isinstance(node, ast.ClassDef):
+                classes.append(extract_class_info(node))
+
+        # Generate test file
+        module_name = source_path.stem
+        test_code = generate_test_file(module_name, functions, classes)
+        test_filename = f"test_{module_name}.py"
+        write_text(content=test_code, filename=test_filename, skill_name="test_writer")
+
+        # Generate conftest.py
+        conftest = generate_conftest(module_name, functions)
+        write_text(content=conftest, filename="conftest.py", skill_name="test_writer")
 
         return {
             "success": True,
-            "output_dir": output_dir,
-            "files": [str(output_file)],
+            "output_dir": str(output_dir),
+            "files": [test_filename, "conftest.py"],
+            "function_count": len(functions),
+            "class_count": len(classes),
         }
 
+    except SyntaxError as e:
+        return {"success": False, "error": f"Syntax error in source: {e}"}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+def extract_function_info(node: ast.FunctionDef) -> dict:
+    """Extract information about a function."""
+    args = []
+    for arg in node.args.args:
+        arg_info = {"name": arg.arg, "type": None}
+        if arg.annotation:
+            arg_info["type"] = ast.unparse(arg.annotation)
+        args.append(arg_info)
+
+    return_type = None
+    if node.returns:
+        return_type = ast.unparse(node.returns)
+
+    docstring = ast.get_docstring(node)
+
+    return {
+        "name": node.name,
+        "args": args,
+        "return_type": return_type,
+        "docstring": docstring,
+        "is_async": isinstance(node, ast.AsyncFunctionDef),
+    }
+
+
+def extract_class_info(node: ast.ClassDef) -> dict:
+    """Extract information about a class."""
+    methods = []
+    for item in node.body:
+        if isinstance(item, ast.FunctionDef):
+            methods.append(extract_function_info(item))
+
+    return {
+        "name": node.name,
+        "methods": methods,
+        "docstring": ast.get_docstring(node),
+    }
+
+
+def generate_test_file(module_name: str, functions: list, classes: list) -> str:
+    """Generate pytest test file."""
+    
+    test_functions = []
+    for func in functions:
+        test_functions.append(generate_function_tests(func))
+
+    test_classes = []
+    for cls in classes:
+        test_classes.append(generate_class_tests(cls))
+
+    functions_code = "\n\n".join(test_functions) if test_functions else ""
+    classes_code = "\n\n".join(test_classes) if test_classes else ""
+
+    return dedent(f'''\
+        """Tests for {module_name}.
+
+        Generated by skillpack test-writer on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        import pytest
+        from unittest.mock import Mock, patch, MagicMock
+
+        # TODO: Update import path
+        # from {module_name} import *
+
+
+        # ============================================================
+        # Function Tests
+        # ============================================================
+
+{functions_code}
+
+
+        # ============================================================
+        # Class Tests
+        # ============================================================
+
+{classes_code}
+    ''')
+
+
+def generate_function_tests(func: dict) -> str:
+    """Generate tests for a function."""
+    name = func["name"]
+    args = func["args"]
+    return_type = func["return_type"]
+    docstring = func["docstring"] or "No docstring"
+
+    # Generate arg fixtures
+    arg_names = [a["name"] for a in args if a["name"] != "self"]
+    fixture_calls = ", ".join(arg_names) if arg_names else ""
+
+    # Generate type-based test values
+    test_values = []
+    for arg in args:
+        if arg["name"] == "self":
+            continue
+        arg_type = arg.get("type", "")
+        if "str" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}="test_value"')
+        elif "int" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}=42')
+        elif "float" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}=3.14')
+        elif "bool" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}=True')
+        elif "list" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}=[]')
+        elif "dict" in str(arg_type).lower():
+            test_values.append(f'{arg["name"]}={{}}')
+        elif "Path" in str(arg_type):
+            test_values.append(f'{arg["name"]}=Path("test.txt")')
+        else:
+            test_values.append(f'{arg["name"]}=None')
+
+    test_call = ", ".join(test_values) if test_values else ""
+
+    return dedent(f'''\
+        class Test{name.title().replace("_", "")}:
+            """Tests for {name}."""
+            
+            # Docstring: {docstring[:50] if docstring else "None"}...
+            
+            def test_{name}_basic(self):
+                """Test basic functionality."""
+                # TODO: Implement test
+                # result = {name}({test_call})
+                # assert result is not None
+                pass
+            
+            def test_{name}_edge_cases(self):
+                """Test edge cases."""
+                # TODO: Test with edge case inputs
+                # - Empty inputs
+                # - None values
+                # - Large inputs
+                pass
+            
+            def test_{name}_error_handling(self):
+                """Test error handling."""
+                # TODO: Test expected exceptions
+                # with pytest.raises(ValueError):
+                #     {name}(invalid_input)
+                pass
+    ''')
+
+
+def generate_class_tests(cls: dict) -> str:
+    """Generate tests for a class."""
+    name = cls["name"]
+    methods = cls["methods"]
+
+    method_tests = []
+    for method in methods:
+        if method["name"].startswith("_") and method["name"] != "__init__":
+            continue
+        method_tests.append(generate_method_test(name, method))
+
+    methods_code = "\n\n".join(method_tests) if method_tests else "    pass"
+
+    return dedent(f'''\
+        class Test{name}:
+            """Tests for {name} class."""
+            
+            @pytest.fixture
+            def instance(self):
+                """Create test instance."""
+                # TODO: Initialize with appropriate args
+                # return {name}()
+                pass
+
+{indent(methods_code, "    ")}
+    ''')
+
+
+def generate_method_test(class_name: str, method: dict) -> str:
+    """Generate test for a class method."""
+    name = method["name"]
+    
+    if name == "__init__":
+        return dedent(f'''\
+        def test_init(self):
+            """Test initialization."""
+            # TODO: Test constructor
+            # instance = {class_name}()
+            # assert instance is not None
+            pass
+        ''')
+    
+    return dedent(f'''\
+        def test_{name}(self, instance):
+            """Test {name} method."""
+            # TODO: Implement test
+            # result = instance.{name}()
+            # assert result is not None
+            pass
+    ''')
+
+
+def generate_conftest(module_name: str, functions: list) -> str:
+    """Generate conftest.py with fixtures."""
+    
+    return dedent(f'''\
+        """Pytest fixtures for {module_name} tests.
+
+        Generated by skillpack test-writer on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        import pytest
+        from pathlib import Path
+        from unittest.mock import Mock
+
+
+        @pytest.fixture
+        def tmp_file(tmp_path: Path) -> Path:
+            """Create a temporary test file."""
+            test_file = tmp_path / "test_input.txt"
+            test_file.write_text("test content")
+            return test_file
+
+
+        @pytest.fixture
+        def sample_data() -> dict:
+            """Sample data for testing."""
+            return {{
+                "id": 1,
+                "name": "test",
+                "values": [1, 2, 3],
+            }}
+
+
+        @pytest.fixture
+        def mock_api():
+            """Mock API client."""
+            mock = Mock()
+            mock.get.return_value = {{"status": "ok"}}
+            return mock
+    ''')
