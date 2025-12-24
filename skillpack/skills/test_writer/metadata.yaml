@@ -1,0 +1,26 @@
+name: test-writer
+version: "1.0.0"
+description: Generate pytest fixtures and unit tests from code
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: test-writer
+  template: "skillpack test-writer --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/test_writer/"
+  files:
+    - output.txt

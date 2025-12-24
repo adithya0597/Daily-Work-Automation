@@ -1,0 +1,26 @@
+name: notebook-to-package
+version: "1.0.0"
+description: Convert Jupyter notebooks to Python packages
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: notebook-to-package
+  template: "skillpack notebook-to-package --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/notebook_to_package/"
+  files:
+    - output.txt

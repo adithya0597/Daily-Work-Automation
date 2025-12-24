@@ -1,0 +1,26 @@
+name: refactor-skill
+version: "1.0.0"
+description: Identify complexity hotspots and propose safe refactors
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: refactor-skill
+  template: "skillpack refactor-skill --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/refactor_skill/"
+  files:
+    - output.txt

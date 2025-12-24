@@ -1,0 +1,33 @@
+name: git-workflow
+version: "1.0.0"
+description: Create feature branches, format commits, and generate PR templates
+tags: [git, workflow, branch, commit, pr]
+
+triggers:
+  - "create branch"
+  - "format commit"
+  - "generate pr"
+  - "git workflow"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: git-workflow
+  template: "skillpack git-workflow {action} --description {description}"
+
+arguments:
+  action:
+    type: enum
+    required: true
+    values: [branch, commit, pr]
+    description: Action to perform
+  description:
+    type: string
+    required: true
+    description: Description for branch/commit/PR
+
+output:
+  directory: "./out/git_workflow/"
+  files:
+    - PR_TEMPLATE.md

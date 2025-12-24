@@ -7,13 +7,17 @@ from skillpack import __version__
 from skillpack.skills import (
     data_quality,
     dbt_generator,
+    git_workflow,
     list_skills,
+    notebook_to_package,
     pr_summary,
     profile_dataset,
     project_scaffolding,
     quality_gate,
+    refactor_skill,
     schema_diff,
     sql_refiner,
+    test_writer,
 )
 from skillpack.utils.logging import setup_logging
 
@@ -56,6 +60,12 @@ def create_parser() -> argparse.ArgumentParser:
     sql_refiner.register_parser(subparsers)
     schema_diff.register_parser(subparsers)
     dbt_generator.register_parser(subparsers)
+
+    # Productivity Layer
+    git_workflow.register_parser(subparsers)
+    notebook_to_package.register_parser(subparsers)
+    test_writer.register_parser(subparsers)
+    refactor_skill.register_parser(subparsers)
 
     return parser
 

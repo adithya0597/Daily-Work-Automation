@@ -1,0 +1,65 @@
+"""notebook-to-package - Convert Jupyter notebooks to Python packages"""
+
+import argparse
+from pathlib import Path
+from typing import Any
+
+from skillpack.utils.output import get_output_dir, write_text
+
+
+def handler(args: argparse.Namespace) -> int:
+    """CLI handler for notebook-to-package."""
+    result = notebook_to_package_main(
+        input_path=args.input,
+    )
+
+    if result.get("success"):
+        print(f"✅ Output written to {result['output_dir']}")
+        return 0
+    print(f"❌ Error: {result.get('error')}")
+    return 1
+
+
+def register_parser(subparsers: Any) -> None:
+    """Register the notebook-to-package subcommand."""
+    parser = subparsers.add_parser(
+        "notebook-to-package",
+        help="Convert Jupyter notebooks to Python packages",
+    )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        required=True,
+        help="Input file path",
+    )
+    parser.set_defaults(handler=handler)
+
+
+def notebook_to_package_main(
+    input_path: Path,
+    output_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Main implementation for notebook-to-package."""
+    if output_dir is None:
+        output_dir = get_output_dir("notebook_to_package")
+
+    try:
+        # Validate input
+        if not input_path.exists():
+            return {"success": False, "error": f"File not found: {input_path}"}
+
+        # TODO: Implement skill logic
+        content = input_path.read_text()
+
+        # Write output
+        output_file = output_dir / "output.txt"
+        write_text(content=f"Processed: {content}", filename="output.txt", skill_name="notebook_to_package")
+
+        return {
+            "success": True,
+            "output_dir": output_dir,
+            "files": [str(output_file)],
+        }
+
+    except Exception as e:
+        return {"success": False, "error": str(e)}
