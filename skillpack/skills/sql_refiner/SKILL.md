@@ -1,24 +1,27 @@
-# Sql Refiner Skill
+# SQL Refiner Skill
 
 ## When to Use
-- Generate SQL queries from natural language questions.
-- Automate sql refiner generation
+- Generate SQL queries from natural language questions
+- Convert questions to dialect-specific SQL
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| question | string | No | Natural language question to convert to SQL |
-| dialect | string | No | SQL dialect (default: postgres) |
+| question | string | Yes | Natural language question to convert to SQL |
+| dialect | string | No | SQL dialect: postgres, bigquery, or snowflake (default: postgres) |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.md | file | Generated output |
+| query.sql | SQL | Generated query template |
+| explain.sql | SQL | EXPLAIN plan query |
+| query_notes.md | markdown | Analysis and tips |
 
 ## Example
 ```bash
-skillpack sql-refiner --name example
+skillpack sql-refiner --question "How many active users in the last 30 days?" --dialect postgres
 ```
 
 ## Related Skills
-- Check skillpack --help for related skills
+- dbt-generator - Generate dbt models
+- data-quality - Validate query results

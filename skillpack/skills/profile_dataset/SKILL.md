@@ -3,17 +3,17 @@
 ## When to Use
 - Profile CSV datasets
 - Generate statistics and summary for data exploration
-- Automate profile dataset generation
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| csv | file_path | Yes | Path to the CSV file to profile |
+| csv | path | Yes | Path to the CSV file to profile |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| profile-report.md | markdown | Statistical profile of the dataset |
+| profile.md | markdown | Human-readable profile report |
+| profile.json | json | Machine-readable profile data |
 
 ## Guardrails
 
@@ -26,13 +26,6 @@
 - Modify or write to input files
 - Upload data externally
 - Execute arbitrary code from data
-
-## Preconditions
-- [ ] Input CSV file exists
-- [ ] File is readable
-
-## Postconditions
-- [ ] Profile report created in output directory
 
 ## Example
 ```bash

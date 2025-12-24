@@ -83,9 +83,9 @@ def hyperparameter_search_main(
         else:  # wandb
             code = generate_wandb_sweep(experiment_name, model_type)
             write_text(content=code, filename="wandb_sweep.py", skill_name="hyperparameter_search", output_dir=output_dir)
-            config = generate_wandb_config(experiment_name, model_type, output_dir=output_dir)
+            config = generate_wandb_config(experiment_name, model_type)
             write_text(content=config, filename="sweep_config.yaml", skill_name="hyperparameter_search", output_dir=output_dir)
-            files.extend(["wandb_sweep.py", "sweep_config.yaml"], output_dir=output_dir)
+            files.extend(["wandb_sweep.py", "sweep_config.yaml"])
 
         # Generate search space config
         search_space = generate_search_space(model_type)
