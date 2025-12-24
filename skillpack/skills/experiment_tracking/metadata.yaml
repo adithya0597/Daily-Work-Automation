@@ -1,0 +1,26 @@
+name: experiment-tracking
+version: "1.0.0"
+description: Standardize MLflow or W&B experiment tracking conventions
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: experiment-tracking
+  template: "skillpack experiment-tracking --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/experiment_tracking/"
+  files:
+    - output.txt

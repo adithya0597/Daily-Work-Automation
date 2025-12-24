@@ -1,0 +1,26 @@
+name: evaluation-report
+version: "1.0.0"
+description: Generate metrics, calibration, and slice analysis reports
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: evaluation-report
+  template: "skillpack evaluation-report --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/evaluation_report/"
+  files:
+    - output.txt

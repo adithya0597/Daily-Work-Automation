@@ -6,11 +6,17 @@ import sys
 from skillpack import __version__
 from skillpack.skills import (
     backfill_planner,
+    baseline_model_factory,
     dag_authoring,
     daily_ops_summary,
     data_quality,
     dbt_generator,
+    evaluation_report,
+    experiment_queue,
+    experiment_tracking,
+    feature_engineering,
     git_workflow,
+    hyperparameter_search,
     list_skills,
     notebook_to_package,
     pipeline_doctor,
@@ -76,6 +82,14 @@ def create_parser() -> argparse.ArgumentParser:
     backfill_planner.register_parser(subparsers)
     pipeline_doctor.register_parser(subparsers)
     daily_ops_summary.register_parser(subparsers)
+
+    # ML Development Layer
+    baseline_model_factory.register_parser(subparsers)
+    feature_engineering.register_parser(subparsers)
+    hyperparameter_search.register_parser(subparsers)
+    experiment_tracking.register_parser(subparsers)
+    evaluation_report.register_parser(subparsers)
+    experiment_queue.register_parser(subparsers)
 
     return parser
 

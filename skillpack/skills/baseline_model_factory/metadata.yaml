@@ -1,0 +1,26 @@
+name: baseline-model-factory
+version: "1.0.0"
+description: Build scikit-learn baselines with proper pipelines and config
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: baseline-model-factory
+  template: "skillpack baseline-model-factory --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/baseline_model_factory/"
+  files:
+    - output.txt

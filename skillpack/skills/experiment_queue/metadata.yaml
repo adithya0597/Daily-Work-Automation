@@ -1,0 +1,26 @@
+name: experiment-queue
+version: "1.0.0"
+description: Manage experiment queue with checkpointing and concurrency
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: experiment-queue
+  template: "skillpack experiment-queue --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/experiment_queue/"
+  files:
+    - output.txt

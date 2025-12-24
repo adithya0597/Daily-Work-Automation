@@ -1,0 +1,26 @@
+name: hyperparameter-search
+version: "1.0.0"
+description: Generate Optuna or Ray Tune sweep templates
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: hyperparameter-search
+  template: "skillpack hyperparameter-search --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/hyperparameter_search/"
+  files:
+    - output.txt
