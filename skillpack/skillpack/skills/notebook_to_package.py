@@ -85,32 +85,32 @@ def notebook_to_package_main(
         # Generate package __init__.py
         init_code = generate_init(package_name, modules)
         write_text(content=init_code, filename=f"{package_name}/__init__.py", skill_name="notebook_to_package")
-        files.append(f"{package_name}/__init__.py", output_dir=output_dir)
+        files.append(f"{package_name}/__init__.py")
 
         # Generate main module
         main_code = generate_main_module(cells, package_name)
         write_text(content=main_code, filename=f"{package_name}/core.py", skill_name="notebook_to_package")
-        files.append(f"{package_name}/core.py", output_dir=output_dir)
+        files.append(f"{package_name}/core.py")
 
         # Generate utils module
         utils_code = generate_utils_module(cells)
         write_text(content=utils_code, filename=f"{package_name}/utils.py", skill_name="notebook_to_package")
-        files.append(f"{package_name}/utils.py", output_dir=output_dir)
+        files.append(f"{package_name}/utils.py")
 
         # Generate CLI entry point
         cli_code = generate_cli(package_name)
         write_text(content=cli_code, filename=f"{package_name}/cli.py", skill_name="notebook_to_package")
-        files.append(f"{package_name}/cli.py", output_dir=output_dir)
+        files.append(f"{package_name}/cli.py")
 
         # Generate pyproject.toml
         pyproject = generate_pyproject(package_name, cells)
         write_text(content=pyproject, filename="pyproject.toml", skill_name="notebook_to_package")
-        files.append("pyproject.toml", output_dir=output_dir)
+        files.append("pyproject.toml")
 
         # Generate README
         readme = generate_readme(package_name, cells)
         write_text(content=readme, filename="README.md", skill_name="notebook_to_package")
-        files.append("README.md", output_dir=output_dir)
+        files.append("README.md")
 
         return {
             "success": True,

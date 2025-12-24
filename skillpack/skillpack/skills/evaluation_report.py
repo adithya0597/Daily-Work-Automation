@@ -81,17 +81,17 @@ def evaluation_report_main(
         # Generate report markdown
         report = generate_report(model_name, task_type, metrics)
         write_text(content=report, filename="evaluation_report.md", skill_name="evaluation_report")
-        files.append("evaluation_report.md", output_dir=output_dir)
+        files.append("evaluation_report.md")
 
         # Generate evaluation script
         eval_script = generate_eval_script(model_name, task_type)
         write_text(content=eval_script, filename="evaluate.py", skill_name="evaluation_report")
-        files.append("evaluate.py", output_dir=output_dir)
+        files.append("evaluate.py")
 
         # Generate plotting script
         plot_script = generate_plot_script(task_type)
         write_text(content=plot_script, filename="plot_results.py", skill_name="evaluation_report")
-        files.append("plot_results.py", output_dir=output_dir)
+        files.append("plot_results.py")
 
         # Save metrics as YAML
         write_text(

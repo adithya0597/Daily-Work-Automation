@@ -80,17 +80,17 @@ def feature_engineering_main(
         # Generate features.py
         features_code = generate_features_module(columns)
         write_text(content=features_code, filename="features.py", skill_name="feature_engineering")
-        files.append("features.py", output_dir=output_dir)
+        files.append("features.py")
 
         # Generate transformations reference
         transformations = generate_transformations_doc(columns)
         write_text(content=transformations, filename="transformations.md", skill_name="feature_engineering")
-        files.append("transformations.md", output_dir=output_dir)
+        files.append("transformations.md")
 
         # Generate config template
         config = generate_config_template(columns)
         write_text(content=config, filename="feature_config.yaml", skill_name="feature_engineering")
-        files.append("feature_config.yaml", output_dir=output_dir)
+        files.append("feature_config.yaml")
 
         return {
             "success": True,

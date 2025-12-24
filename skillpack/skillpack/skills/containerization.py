@@ -79,28 +79,28 @@ def containerization_main(
         # Generate Dockerfile
         dockerfile = generate_dockerfile(service_name, base_image, runtime, port)
         write_text(content=dockerfile, filename="Dockerfile", skill_name="containerization")
-        files.append("Dockerfile", output_dir=output_dir)
+        files.append("Dockerfile")
 
         # Generate .dockerignore
         dockerignore = generate_dockerignore(base_image)
         write_text(content=dockerignore, filename=".dockerignore", skill_name="containerization")
-        files.append(".dockerignore", output_dir=output_dir)
+        files.append(".dockerignore")
 
         # Generate docker-compose.yml
         if with_compose:
             compose = generate_compose(service_name, port)
             write_text(content=compose, filename="docker-compose.yml", skill_name="containerization")
-            files.append("docker-compose.yml", output_dir=output_dir)
+            files.append("docker-compose.yml")
 
         # Generate Makefile for common commands
         makefile = generate_makefile(service_name)
         write_text(content=makefile, filename="Makefile", skill_name="containerization")
-        files.append("Makefile", output_dir=output_dir)
+        files.append("Makefile")
 
         # Generate README
         readme = generate_readme(service_name, port, with_compose)
         write_text(content=readme, filename="DOCKER_README.md", skill_name="containerization")
-        files.append("DOCKER_README.md", output_dir=output_dir)
+        files.append("DOCKER_README.md")
 
         return {
             "success": True,

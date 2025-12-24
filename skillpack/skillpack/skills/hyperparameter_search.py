@@ -75,11 +75,11 @@ def hyperparameter_search_main(
         if framework == "optuna":
             code = generate_optuna_sweep(experiment_name, model_type)
             write_text(content=code, filename="optuna_sweep.py", skill_name="hyperparameter_search")
-            files.append("optuna_sweep.py", output_dir=output_dir)
+            files.append("optuna_sweep.py")
         elif framework == "ray":
             code = generate_ray_tune_sweep(experiment_name, model_type)
             write_text(content=code, filename="ray_tune_sweep.py", skill_name="hyperparameter_search")
-            files.append("ray_tune_sweep.py", output_dir=output_dir)
+            files.append("ray_tune_sweep.py")
         else:  # wandb
             code = generate_wandb_sweep(experiment_name, model_type)
             write_text(content=code, filename="wandb_sweep.py", skill_name="hyperparameter_search")
@@ -90,12 +90,12 @@ def hyperparameter_search_main(
         # Generate search space config
         search_space = generate_search_space(model_type)
         write_text(content=search_space, filename="search_space.yaml", skill_name="hyperparameter_search")
-        files.append("search_space.yaml", output_dir=output_dir)
+        files.append("search_space.yaml")
 
         # Generate README
         readme = generate_readme(experiment_name, framework)
         write_text(content=readme, filename="README.md", skill_name="hyperparameter_search")
-        files.append("README.md", output_dir=output_dir)
+        files.append("README.md")
 
         return {
             "success": True,
