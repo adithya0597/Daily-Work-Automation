@@ -1,0 +1,26 @@
+name: monitoring-drift
+version: "1.0.0"
+description: Templates for data and prediction drift detection
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: monitoring-drift
+  template: "skillpack monitoring-drift --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/monitoring_drift/"
+  files:
+    - output.txt

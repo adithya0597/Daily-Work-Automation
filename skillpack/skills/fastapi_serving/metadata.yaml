@@ -1,0 +1,26 @@
+name: fastapi-serving
+version: "1.0.0"
+description: Wrap models in FastAPI services with validation and health endpoints
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: fastapi-serving
+  template: "skillpack fastapi-serving --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/fastapi_serving/"
+  files:
+    - output.txt

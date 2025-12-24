@@ -1,0 +1,26 @@
+name: containerization
+version: "1.0.0"
+description: Generate Dockerfile and compose configs for services
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: containerization
+  template: "skillpack containerization --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/containerization/"
+  files:
+    - output.txt

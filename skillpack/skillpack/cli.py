@@ -7,6 +7,8 @@ from skillpack import __version__
 from skillpack.skills import (
     backfill_planner,
     baseline_model_factory,
+    containerization,
+    cost_regression,
     dag_authoring,
     daily_ops_summary,
     data_quality,
@@ -14,10 +16,13 @@ from skillpack.skills import (
     evaluation_report,
     experiment_queue,
     experiment_tracking,
+    fastapi_serving,
     feature_engineering,
     git_workflow,
     hyperparameter_search,
+    iac_boilerplate,
     list_skills,
+    monitoring_drift,
     notebook_to_package,
     pipeline_doctor,
     pr_summary,
@@ -90,6 +95,13 @@ def create_parser() -> argparse.ArgumentParser:
     experiment_tracking.register_parser(subparsers)
     evaluation_report.register_parser(subparsers)
     experiment_queue.register_parser(subparsers)
+
+    # Serving/Infra Layer
+    fastapi_serving.register_parser(subparsers)
+    containerization.register_parser(subparsers)
+    iac_boilerplate.register_parser(subparsers)
+    monitoring_drift.register_parser(subparsers)
+    cost_regression.register_parser(subparsers)
 
     return parser
 

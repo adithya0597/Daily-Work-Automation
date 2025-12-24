@@ -153,7 +153,7 @@ def test_validate_all_dependencies() -> None:
     from skillpack.utils.skill_loader import validate_all_dependencies
     
     result = validate_all_dependencies()
-    assert result["total_skills"] == 22
+    assert result["total_skills"] == 27
     assert "details" in result
 
 
@@ -162,7 +162,7 @@ def test_get_dependency_graph() -> None:
     from skillpack.utils.skill_loader import get_dependency_graph
     
     graph = get_dependency_graph()
-    assert len(graph) == 22
+    assert len(graph) == 27
     assert "data-quality" in graph
     assert "profile-dataset" in graph["data-quality"]
 

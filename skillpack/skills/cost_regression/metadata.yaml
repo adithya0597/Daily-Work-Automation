@@ -1,0 +1,26 @@
+name: cost-regression
+version: "1.0.0"
+description: Detect cost and performance regressions in pipelines
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: cost-regression
+  template: "skillpack cost-regression --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/cost_regression/"
+  files:
+    - output.txt

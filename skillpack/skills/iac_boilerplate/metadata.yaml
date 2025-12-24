@@ -1,0 +1,26 @@
+name: iac-boilerplate
+version: "1.0.0"
+description: Create Terraform modules for cloud infrastructure
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: iac-boilerplate
+  template: "skillpack iac-boilerplate --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/iac_boilerplate/"
+  files:
+    - output.txt
