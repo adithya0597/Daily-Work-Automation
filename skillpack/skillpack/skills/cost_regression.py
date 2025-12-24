@@ -1,20 +1,36 @@
-"""cost-regression - Detect cost and performance regressions in pipelines"""
+"""cost-regression - Detect cost and performance regression in infrastructure."""
 
 import argparse
+import json
+from datetime import datetime
 from pathlib import Path
+from textwrap import dedent
 from typing import Any
+
+import yaml
 
 from skillpack.utils.output import get_output_dir, write_text
 
 
 def handler(args: argparse.Namespace) -> int:
     """CLI handler for cost-regression."""
+    # Load metrics if provided
+    metrics = {}
+    if args.metrics and args.metrics.exists():
+        with open(args.metrics) as f:
+            metrics = yaml.safe_load(f) or {}
+
     result = cost_regression_main(
-        input_path=args.input,
+        project_name=args.name,
+        metrics=metrics,
+        threshold=args.threshold,
+        output_dir=args.output_dir,
     )
 
     if result.get("success"):
-        print(f"✅ Output written to {result['output_dir']}")
+        print(f"✅ Generated cost analysis: {result['output_dir']}")
+        for f in result.get("files", []):
+            print(f"   - {f}")
         return 0
     print(f"❌ Error: {result.get('error')}")
     return 1
@@ -24,42 +40,495 @@ def register_parser(subparsers: Any) -> None:
     """Register the cost-regression subcommand."""
     parser = subparsers.add_parser(
         "cost-regression",
-        help="Detect cost and performance regressions in pipelines",
+        help="Detect cost and performance regression in infrastructure",
+    )
+    parser.add_argument("--name", required=True, help="Project name")
+    parser.add_argument(
+        "--metrics",
+        type=Path,
+        help="Path to metrics YAML file",
     )
     parser.add_argument(
-        "--input",
+        "--threshold",
+        type=float,
+        default=0.1,
+        help="Regression threshold (default: 10%)",
+    )
+    parser.add_argument(
+        "--output-dir",
         type=Path,
-        required=True,
-        help="Input file path",
+        default=Path("./out/cost_regression"),
+        help="Output directory",
     )
     parser.set_defaults(handler=handler)
 
 
 def cost_regression_main(
-    input_path: Path,
+    project_name: str,
+    metrics: dict | None = None,
+    threshold: float = 0.1,
     output_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Main implementation for cost-regression."""
+    """Generate cost and performance regression analysis."""
     if output_dir is None:
         output_dir = get_output_dir("cost_regression")
+    else:
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+    if metrics is None:
+        metrics = generate_sample_metrics()
 
     try:
-        # Validate input
-        if not input_path.exists():
-            return {"success": False, "error": f"File not found: {input_path}"}
+        files = []
 
-        # TODO: Implement skill logic
-        content = input_path.read_text()
+        # Generate analyzer
+        analyzer = generate_analyzer(project_name)
+        write_text(content=analyzer, filename="cost_analyzer.py", skill_name="cost_regression")
+        files.append("cost_analyzer.py")
 
-        # Write output
-        output_file = output_dir / "output.txt"
-        write_text(content=f"Processed: {content}", filename="output.txt", skill_name=output_dir.name)
+        # Generate performance analyzer
+        perf_analyzer = generate_perf_analyzer(project_name)
+        write_text(content=perf_analyzer, filename="perf_analyzer.py", skill_name="cost_regression")
+        files.append("perf_analyzer.py")
+
+        # Generate CI integration
+        ci_check = generate_ci_check(project_name, threshold)
+        write_text(content=ci_check, filename="check_regression.py", skill_name="cost_regression")
+        files.append("check_regression.py")
+
+        # Generate GitHub Action
+        gh_action = generate_github_action(project_name)
+        write_text(content=gh_action, filename="cost-check.yml", skill_name="cost_regression")
+        files.append("cost-check.yml")
+
+        # Generate report
+        report = generate_report(project_name, metrics, threshold)
+        write_text(content=report, filename="regression_report.md", skill_name="cost_regression")
+        files.append("regression_report.md")
 
         return {
             "success": True,
-            "output_dir": output_dir,
-            "files": [str(output_file)],
+            "output_dir": str(output_dir),
+            "files": files,
         }
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+def generate_sample_metrics() -> dict:
+    """Generate sample metrics."""
+    return {
+        "baseline": {
+            "cost": {"monthly": 1500, "compute": 800, "storage": 400, "network": 300},
+            "performance": {"latency_p50": 45, "latency_p99": 120, "throughput": 1000},
+        },
+        "current": {
+            "cost": {"monthly": 1650, "compute": 900, "storage": 420, "network": 330},
+            "performance": {"latency_p50": 48, "latency_p99": 135, "throughput": 950},
+        },
+    }
+
+
+def generate_analyzer(name: str) -> str:
+    """Generate cost analyzer."""
+    return dedent(f'''\
+        #!/usr/bin/env python3
+        """Cost regression analyzer for {name}.
+
+        Generated by skillpack on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        import logging
+        from dataclasses import dataclass
+        from datetime import datetime
+        from pathlib import Path
+        from typing import Any
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+
+        @dataclass
+        class CostRegression:
+            category: str
+            baseline: float
+            current: float
+            change: float
+            change_pct: float
+            is_regression: bool
+
+
+        class CostAnalyzer:
+            """Analyze infrastructure costs for regressions."""
+            
+            def __init__(self, threshold: float = 0.1):
+                self.threshold = threshold
+            
+            def compare(
+                self,
+                baseline: dict[str, float],
+                current: dict[str, float],
+            ) -> list[CostRegression]:
+                \"\"\"Compare baseline vs current costs.\"\"\"
+                results = []
+                
+                for category, baseline_cost in baseline.items():
+                    current_cost = current.get(category, 0)
+                    change = current_cost - baseline_cost
+                    change_pct = change / baseline_cost if baseline_cost > 0 else 0
+                    
+                    is_regression = change_pct > self.threshold
+                    
+                    results.append(CostRegression(
+                        category=category,
+                        baseline=baseline_cost,
+                        current=current_cost,
+                        change=change,
+                        change_pct=change_pct,
+                        is_regression=is_regression,
+                    ))
+                    
+                    if is_regression:
+                        logger.warning(
+                            f"Cost regression in {{category}}: "
+                            f"{{change_pct*100:.1f}}% increase (>${{change:.2f}})"
+                        )
+                
+                return results
+            
+            def get_summary(self, results: list[CostRegression]) -> dict:
+                \"\"\"Summarize cost analysis.\"\"\"
+                total_baseline = sum(r.baseline for r in results)
+                total_current = sum(r.current for r in results)
+                total_change = total_current - total_baseline
+                
+                regressions = [r for r in results if r.is_regression]
+                
+                return {{
+                    "total_baseline": total_baseline,
+                    "total_current": total_current,
+                    "total_change": total_change,
+                    "total_change_pct": total_change / total_baseline if total_baseline > 0 else 0,
+                    "regression_count": len(regressions),
+                    "regressions": [r.category for r in regressions],
+                    "status": "FAIL" if regressions else "PASS",
+                }}
+            
+            def format_report(self, results: list[CostRegression]) -> str:
+                \"\"\"Format results as markdown table.\"\"\"
+                lines = ["| Category | Baseline | Current | Change | Status |"]
+                lines.append("|----------|----------|---------|--------|--------|")
+                
+                for r in results:
+                    status = "🔴 REGRESSED" if r.is_regression else "✅ OK"
+                    lines.append(
+                        f"| {{r.category}} | ${{r.baseline:.2f}} | ${{r.current:.2f}} | "
+                        f"{{r.change_pct*100:+.1f}}% | {{status}} |"
+                    )
+                
+                return "\\n".join(lines)
+
+
+        # Example usage
+        if __name__ == "__main__":
+            analyzer = CostAnalyzer(threshold=0.1)
+            
+            baseline = {{"compute": 800, "storage": 400, "network": 300}}
+            current = {{"compute": 920, "storage": 420, "network": 330}}
+            
+            results = analyzer.compare(baseline, current)
+            summary = analyzer.get_summary(results)
+            
+            print(analyzer.format_report(results))
+            print(f"\\nStatus: {{summary['status']}}")
+    ''')
+
+
+def generate_perf_analyzer(name: str) -> str:
+    """Generate performance analyzer."""
+    return dedent(f'''\
+        #!/usr/bin/env python3
+        """Performance regression analyzer for {name}.
+
+        Generated by skillpack on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        import logging
+        from dataclasses import dataclass
+        from typing import Any
+
+        import numpy as np
+        from scipy import stats
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+
+        @dataclass
+        class PerfRegression:
+            metric: str
+            baseline: float
+            current: float
+            change_pct: float
+            is_regression: bool
+            p_value: float | None = None
+
+
+        class PerformanceAnalyzer:
+            """Analyze performance metrics for regressions."""
+            
+            def __init__(
+                self,
+                latency_threshold: float = 0.1,
+                throughput_threshold: float = -0.05,
+            ):
+                self.latency_threshold = latency_threshold  # Increase = bad
+                self.throughput_threshold = throughput_threshold  # Decrease = bad
+            
+            def compare(
+                self,
+                baseline: dict[str, float],
+                current: dict[str, float],
+            ) -> list[PerfRegression]:
+                \"\"\"Compare baseline vs current performance.\"\"\"
+                results = []
+                
+                for metric, baseline_val in baseline.items():
+                    current_val = current.get(metric, baseline_val)
+                    change_pct = (current_val - baseline_val) / baseline_val if baseline_val > 0 else 0
+                    
+                    # Determine if this is a regression
+                    if "latency" in metric.lower():
+                        is_regression = change_pct > self.latency_threshold
+                    elif "throughput" in metric.lower():
+                        is_regression = change_pct < self.throughput_threshold
+                    else:
+                        is_regression = abs(change_pct) > self.latency_threshold
+                    
+                    results.append(PerfRegression(
+                        metric=metric,
+                        baseline=baseline_val,
+                        current=current_val,
+                        change_pct=change_pct,
+                        is_regression=is_regression,
+                    ))
+                    
+                    if is_regression:
+                        logger.warning(f"Performance regression in {{metric}}: {{change_pct*100:+.1f}}%")
+                
+                return results
+            
+            def compare_distributions(
+                self,
+                baseline_samples: np.ndarray,
+                current_samples: np.ndarray,
+                metric_name: str = "latency",
+            ) -> PerfRegression:
+                \"\"\"Statistical comparison of distributions.\"\"\"
+                statistic, p_value = stats.mannwhitneyu(
+                    baseline_samples, current_samples, alternative="less"
+                )
+                
+                baseline_median = np.median(baseline_samples)
+                current_median = np.median(current_samples)
+                change_pct = (current_median - baseline_median) / baseline_median
+                
+                is_regression = p_value < 0.05 and change_pct > self.latency_threshold
+                
+                return PerfRegression(
+                    metric=metric_name,
+                    baseline=float(baseline_median),
+                    current=float(current_median),
+                    change_pct=change_pct,
+                    is_regression=is_regression,
+                    p_value=float(p_value),
+                )
+            
+            def get_summary(self, results: list[PerfRegression]) -> dict:
+                \"\"\"Summarize performance analysis.\"\"\"
+                regressions = [r for r in results if r.is_regression]
+                
+                return {{
+                    "total_metrics": len(results),
+                    "regression_count": len(regressions),
+                    "regressions": [r.metric for r in regressions],
+                    "status": "FAIL" if regressions else "PASS",
+                }}
+
+
+        # Example usage
+        if __name__ == "__main__":
+            analyzer = PerformanceAnalyzer()
+            
+            baseline = {{"latency_p50": 45, "latency_p99": 120, "throughput": 1000}}
+            current = {{"latency_p50": 52, "latency_p99": 145, "throughput": 950}}
+            
+            results = analyzer.compare(baseline, current)
+            summary = analyzer.get_summary(results)
+            
+            print(f"Status: {{summary['status']}}")
+            for r in results:
+                status = "REGRESSED" if r.is_regression else "OK"
+                print(f"  {{r.metric}}: {{r.change_pct*100:+.1f}}% [{{status}}]")
+    ''')
+
+
+def generate_ci_check(name: str, threshold: float) -> str:
+    """Generate CI check script."""
+    return dedent(f'''\
+        #!/usr/bin/env python3
+        """CI regression check for {name}.
+
+        Generated by skillpack on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        import argparse
+        import json
+        import sys
+        from pathlib import Path
+
+        import yaml
+
+        from cost_analyzer import CostAnalyzer
+        from perf_analyzer import PerformanceAnalyzer
+
+
+        def main():
+            parser = argparse.ArgumentParser()
+            parser.add_argument("--baseline", type=Path, required=True)
+            parser.add_argument("--current", type=Path, required=True)
+            parser.add_argument("--threshold", type=float, default={threshold})
+            parser.add_argument("--output", type=Path, default=Path("regression_results.json"))
+            args = parser.parse_args()
+            
+            # Load metrics
+            with open(args.baseline) as f:
+                baseline = yaml.safe_load(f)
+            with open(args.current) as f:
+                current = yaml.safe_load(f)
+            
+            # Analyze cost
+            cost_analyzer = CostAnalyzer(threshold=args.threshold)
+            cost_results = cost_analyzer.compare(
+                baseline.get("cost", {{}}),
+                current.get("cost", {{}}),
+            )
+            cost_summary = cost_analyzer.get_summary(cost_results)
+            
+            # Analyze performance
+            perf_analyzer = PerformanceAnalyzer()
+            perf_results = perf_analyzer.compare(
+                baseline.get("performance", {{}}),
+                current.get("performance", {{}}),
+            )
+            perf_summary = perf_analyzer.get_summary(perf_results)
+            
+            # Combine results
+            overall_status = "FAIL" if cost_summary["status"] == "FAIL" or perf_summary["status"] == "FAIL" else "PASS"
+            
+            results = {{
+                "status": overall_status,
+                "cost": cost_summary,
+                "performance": perf_summary,
+            }}
+            
+            # Save results
+            with open(args.output, "w") as f:
+                json.dump(results, f, indent=2)
+            
+            print(f"Overall Status: {{overall_status}}")
+            
+            if overall_status == "FAIL":
+                print("\\nRegressions detected:")
+                if cost_summary["regressions"]:
+                    print(f"  Cost: {{cost_summary['regressions']}}")
+                if perf_summary["regressions"]:
+                    print(f"  Performance: {{perf_summary['regressions']}}")
+                return 1
+            
+            return 0
+
+
+        if __name__ == "__main__":
+            sys.exit(main())
+    ''')
+
+
+def generate_github_action(name: str) -> str:
+    """Generate GitHub Action workflow."""
+    return dedent(f'''\
+        # Cost and Performance Regression Check
+        # Generated by skillpack on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+
+        name: Cost Regression Check
+
+        on:
+          pull_request:
+            paths:
+              - 'terraform/**'
+              - 'infrastructure/**'
+
+        jobs:
+          check-regression:
+            runs-on: ubuntu-latest
+            steps:
+              - uses: actions/checkout@v4
+              
+              - name: Set up Python
+                uses: actions/setup-python@v5
+                with:
+                  python-version: '3.11'
+              
+              - name: Install dependencies
+                run: |
+                  pip install pyyaml numpy scipy
+              
+              - name: Run regression check
+                run: |
+                  python check_regression.py \\
+                    --baseline baseline_metrics.yaml \\
+                    --current current_metrics.yaml \\
+                    --threshold 0.1
+              
+              - name: Upload results
+                uses: actions/upload-artifact@v4
+                with:
+                  name: regression-results
+                  path: regression_results.json
+    ''')
+
+
+def generate_report(name: str, metrics: dict, threshold: float) -> str:
+    """Generate regression report."""
+    baseline = metrics.get("baseline", {})
+    current = metrics.get("current", {})
+
+    return dedent(f'''\
+        # Cost & Performance Regression Report: {name}
+
+        Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}  
+        Threshold: {threshold*100:.0f}%
+
+        ## Cost Summary
+
+        | Category | Baseline | Current | Change |
+        |----------|----------|---------|--------|
+        | Compute | ${baseline.get("cost", {}).get("compute", 0)} | ${current.get("cost", {}).get("compute", 0)} | |
+        | Storage | ${baseline.get("cost", {}).get("storage", 0)} | ${current.get("cost", {}).get("storage", 0)} | |
+        | Network | ${baseline.get("cost", {}).get("network", 0)} | ${current.get("cost", {}).get("network", 0)} | |
+
+        ## Performance Summary
+
+        | Metric | Baseline | Current | Change |
+        |--------|----------|---------|--------|
+        | Latency P50 | {baseline.get("performance", {}).get("latency_p50", 0)}ms | {current.get("performance", {}).get("latency_p50", 0)}ms | |
+        | Latency P99 | {baseline.get("performance", {}).get("latency_p99", 0)}ms | {current.get("performance", {}).get("latency_p99", 0)}ms | |
+        | Throughput | {baseline.get("performance", {}).get("throughput", 0)} req/s | {current.get("performance", {}).get("throughput", 0)} req/s | |
+
+        ## Recommendations
+
+        - Review infrastructure changes for cost impact
+        - Run load tests before deploying
+        - Set up alerts for metric thresholds
+    ''')
