@@ -1,24 +1,25 @@
 name: dbt-generator
 version: "1.0.0"
-description: Generate dbt models and tests.
+description: Generate dbt models and tests
+
 tags:
-  - automation
   - data
+  - dbt
 
 triggers:
-  - Generate dbt-generator output
-  - Create dbt generator
+  - Generate dbt models
+  - Create dbt staging and marts
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: dbt-generator
-  template: "skillpack dbt-generator --config {...}"
+  template: "skillpack dbt-generator --config config.yaml"
 
 arguments:
   config:
-    type: string
+    type: path
     required: false
     cli_name: "--config"
     description: "Path to config file (YAML or JSON). If not provided, generates an example."
@@ -26,4 +27,7 @@ arguments:
 output:
   directory: "./out/dbt_generator/"
   files:
-    - output.md
+    - models/staging/stg_*.sql
+    - models/marts/*.sql
+    - models/schema.yml
+    - models/docs.md

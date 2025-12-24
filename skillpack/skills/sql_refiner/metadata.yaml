@@ -1,34 +1,37 @@
 name: sql-refiner
 version: "1.0.0"
-description: Generate SQL queries from natural language questions.
+description: Generate SQL from natural language questions
+
 tags:
-  - automation
+  - sql
   - data
 
 triggers:
-  - Generate sql-refiner output
-  - Create sql refiner
+  - Generate SQL query
+  - Convert question to SQL
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: sql-refiner
-  template: "skillpack sql-refiner --question {...} --dialect {...}"
+  template: "skillpack sql-refiner --question 'How many active users?' --dialect postgres"
 
 arguments:
   question:
     type: string
-    required: false
+    required: true
     cli_name: "--question"
     description: "Natural language question to convert to SQL"
   dialect:
     type: string
     required: false
     cli_name: "--dialect"
-    description: "SQL dialect (default: postgres)"
+    description: "SQL dialect: postgres, bigquery, or snowflake"
 
 output:
   directory: "./out/sql_refiner/"
   files:
-    - output.md
+    - query.sql
+    - explain.sql
+    - query_notes.md

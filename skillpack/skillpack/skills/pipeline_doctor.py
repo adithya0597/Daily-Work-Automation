@@ -101,11 +101,11 @@ def pipeline_doctor_main(
 
         # Generate diagnosis report
         report = generate_diagnosis_report(all_issues, error_patterns, timeline)
-        write_text(content=report, filename="diagnosis.md", skill_name="pipeline_doctor")
+        write_text(content=report, filename="diagnosis.md", skill_name="pipeline_doctor", output_dir=output_dir)
 
         # Generate remediation suggestions
         remediation = generate_remediation(all_issues, error_patterns)
-        write_text(content=remediation, filename="remediation.md", skill_name="pipeline_doctor")
+        write_text(content=remediation, filename="remediation.md", skill_name="pipeline_doctor", output_dir=output_dir)
 
         error_count = len([i for i in all_issues if i["severity"] == "error"])
         warning_count = len([i for i in all_issues if i["severity"] == "warning"])

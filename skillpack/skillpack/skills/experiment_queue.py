@@ -64,22 +64,22 @@ def experiment_queue_main(
 
         # Generate queue manager
         manager = generate_queue_manager(queue_name)
-        write_text(content=manager, filename="queue_manager.py", skill_name="experiment_queue")
+        write_text(content=manager, filename="queue_manager.py", skill_name="experiment_queue", output_dir=output_dir)
         files.append("queue_manager.py")
 
         # Generate runner script
         runner = generate_runner(queue_name)
-        write_text(content=runner, filename="run_queue.py", skill_name="experiment_queue")
+        write_text(content=runner, filename="run_queue.py", skill_name="experiment_queue", output_dir=output_dir)
         files.append("run_queue.py")
 
         # Generate experiment config
         config = generate_experiment_config(queue_name, experiments)
-        write_text(content=config, filename="experiments.yaml", skill_name="experiment_queue")
+        write_text(content=config, filename="experiments.yaml", skill_name="experiment_queue", output_dir=output_dir)
         files.append("experiments.yaml")
 
         # Generate checkpoint template
         checkpoint = generate_checkpoint_template(queue_name)
-        write_text(content=checkpoint, filename="checkpoint.json", skill_name="experiment_queue")
+        write_text(content=checkpoint, filename="checkpoint.json", skill_name="experiment_queue", output_dir=output_dir)
         files.append("checkpoint.json")
 
         return {

@@ -80,11 +80,11 @@ def test_writer_main(
         module_name = source_path.stem
         test_code = generate_test_file(module_name, functions, classes)
         test_filename = f"test_{module_name}.py"
-        write_text(content=test_code, filename=test_filename, skill_name="test_writer")
+        write_text(content=test_code, filename=test_filename, skill_name="test_writer", output_dir=output_dir)
 
         # Generate conftest.py
         conftest = generate_conftest(module_name, functions)
-        write_text(content=conftest, filename="conftest.py", skill_name="test_writer")
+        write_text(content=conftest, filename="conftest.py", skill_name="test_writer", output_dir=output_dir)
 
         return {
             "success": True,

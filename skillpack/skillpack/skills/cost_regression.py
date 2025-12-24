@@ -83,27 +83,27 @@ def cost_regression_main(
 
         # Generate analyzer
         analyzer = generate_analyzer(project_name)
-        write_text(content=analyzer, filename="cost_analyzer.py", skill_name="cost_regression")
+        write_text(content=analyzer, filename="cost_analyzer.py", skill_name="cost_regression", output_dir=output_dir)
         files.append("cost_analyzer.py")
 
         # Generate performance analyzer
         perf_analyzer = generate_perf_analyzer(project_name)
-        write_text(content=perf_analyzer, filename="perf_analyzer.py", skill_name="cost_regression")
+        write_text(content=perf_analyzer, filename="perf_analyzer.py", skill_name="cost_regression", output_dir=output_dir)
         files.append("perf_analyzer.py")
 
         # Generate CI integration
         ci_check = generate_ci_check(project_name, threshold)
-        write_text(content=ci_check, filename="check_regression.py", skill_name="cost_regression")
+        write_text(content=ci_check, filename="check_regression.py", skill_name="cost_regression", output_dir=output_dir)
         files.append("check_regression.py")
 
         # Generate GitHub Action
         gh_action = generate_github_action(project_name)
-        write_text(content=gh_action, filename="cost-check.yml", skill_name="cost_regression")
+        write_text(content=gh_action, filename="cost-check.yml", skill_name="cost_regression", output_dir=output_dir)
         files.append("cost-check.yml")
 
         # Generate report
         report = generate_report(project_name, metrics, threshold)
-        write_text(content=report, filename="regression_report.md", skill_name="cost_regression")
+        write_text(content=report, filename="regression_report.md", skill_name="cost_regression", output_dir=output_dir)
         files.append("regression_report.md")
 
         return {

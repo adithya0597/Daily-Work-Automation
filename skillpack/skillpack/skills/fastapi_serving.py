@@ -64,23 +64,23 @@ def fastapi_serving_main(
     try:
         # Generate main app
         app_code = generate_app(model_name, model_type)
-        write_text(content=app_code, filename="main.py", skill_name="fastapi_serving")
+        write_text(content=app_code, filename="main.py", skill_name="fastapi_serving", output_dir=output_dir)
 
         # Generate models/schemas
         schemas_code = generate_schemas(model_name)
-        write_text(content=schemas_code, filename="schemas.py", skill_name="fastapi_serving")
+        write_text(content=schemas_code, filename="schemas.py", skill_name="fastapi_serving", output_dir=output_dir)
 
         # Generate Dockerfile
         dockerfile = generate_dockerfile(model_name)
-        write_text(content=dockerfile, filename="Dockerfile", skill_name="fastapi_serving")
+        write_text(content=dockerfile, filename="Dockerfile", skill_name="fastapi_serving", output_dir=output_dir)
 
         # Generate requirements
         requirements = generate_requirements(model_type)
-        write_text(content=requirements, filename="requirements.txt", skill_name="fastapi_serving")
+        write_text(content=requirements, filename="requirements.txt", skill_name="fastapi_serving", output_dir=output_dir)
 
         # Generate test file
         tests = generate_tests(model_name)
-        write_text(content=tests, filename="test_api.py", skill_name="fastapi_serving")
+        write_text(content=tests, filename="test_api.py", skill_name="fastapi_serving", output_dir=output_dir)
 
         return {
             "success": True,

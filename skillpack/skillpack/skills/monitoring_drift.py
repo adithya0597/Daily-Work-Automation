@@ -64,27 +64,27 @@ def monitoring_drift_main(
 
         if drift_type in ["data", "both"]:
             data_drift = generate_data_drift_monitor(model_name)
-            write_text(content=data_drift, filename="data_drift.py", skill_name="monitoring_drift")
+            write_text(content=data_drift, filename="data_drift.py", skill_name="monitoring_drift", output_dir=output_dir)
             files.append("data_drift.py")
 
         if drift_type in ["prediction", "both"]:
             pred_drift = generate_prediction_drift_monitor(model_name)
-            write_text(content=pred_drift, filename="prediction_drift.py", skill_name="monitoring_drift")
+            write_text(content=pred_drift, filename="prediction_drift.py", skill_name="monitoring_drift", output_dir=output_dir)
             files.append("prediction_drift.py")
 
         # Generate alerting config
         alerting = generate_alerting_config(model_name)
-        write_text(content=alerting, filename="alerting.yaml", skill_name="monitoring_drift")
+        write_text(content=alerting, filename="alerting.yaml", skill_name="monitoring_drift", output_dir=output_dir)
         files.append("alerting.yaml")
 
         # Generate dashboard template
         dashboard = generate_dashboard(model_name)
-        write_text(content=dashboard, filename="dashboard.json", skill_name="monitoring_drift")
+        write_text(content=dashboard, filename="dashboard.json", skill_name="monitoring_drift", output_dir=output_dir)
         files.append("dashboard.json")
 
         # Generate README
         readme = generate_readme(model_name, drift_type)
-        write_text(content=readme, filename="README.md", skill_name="monitoring_drift")
+        write_text(content=readme, filename="README.md", skill_name="monitoring_drift", output_dir=output_dir)
         files.append("README.md")
 
         return {

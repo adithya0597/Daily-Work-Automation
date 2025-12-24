@@ -1,29 +1,30 @@
 name: quality-gate
 version: "1.0.0"
-description: Run format + lint + type-check + tests.
+description: Run format + lint + type-check + tests
+
 tags:
-  - automation
-  - data
+  - quality
+  - ci
 
 triggers:
-  - Generate quality-gate output
-  - Create quality gate
+  - Run quality checks
+  - Validate code quality
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: quality-gate
-  template: "skillpack quality-gate --check {...}"
+  template: "skillpack quality-gate --check"
 
 arguments:
   check:
-    type: string
+    type: boolean
     required: false
     cli_name: "--check"
-    description: "Check only, don"
+    description: "Check only, don't modify files"
 
 output:
-  directory: "./out/quality_gate/"
-  files:
-    - output.md
+  directory: null
+  files: []
+  note: "Writes to stdout only, no file output"

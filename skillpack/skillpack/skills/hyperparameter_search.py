@@ -74,27 +74,27 @@ def hyperparameter_search_main(
 
         if framework == "optuna":
             code = generate_optuna_sweep(experiment_name, model_type)
-            write_text(content=code, filename="optuna_sweep.py", skill_name="hyperparameter_search")
+            write_text(content=code, filename="optuna_sweep.py", skill_name="hyperparameter_search", output_dir=output_dir)
             files.append("optuna_sweep.py")
         elif framework == "ray":
             code = generate_ray_tune_sweep(experiment_name, model_type)
-            write_text(content=code, filename="ray_tune_sweep.py", skill_name="hyperparameter_search")
+            write_text(content=code, filename="ray_tune_sweep.py", skill_name="hyperparameter_search", output_dir=output_dir)
             files.append("ray_tune_sweep.py")
         else:  # wandb
             code = generate_wandb_sweep(experiment_name, model_type)
-            write_text(content=code, filename="wandb_sweep.py", skill_name="hyperparameter_search")
+            write_text(content=code, filename="wandb_sweep.py", skill_name="hyperparameter_search", output_dir=output_dir)
             config = generate_wandb_config(experiment_name, model_type, output_dir=output_dir)
-            write_text(content=config, filename="sweep_config.yaml", skill_name="hyperparameter_search")
+            write_text(content=config, filename="sweep_config.yaml", skill_name="hyperparameter_search", output_dir=output_dir)
             files.extend(["wandb_sweep.py", "sweep_config.yaml"], output_dir=output_dir)
 
         # Generate search space config
         search_space = generate_search_space(model_type)
-        write_text(content=search_space, filename="search_space.yaml", skill_name="hyperparameter_search")
+        write_text(content=search_space, filename="search_space.yaml", skill_name="hyperparameter_search", output_dir=output_dir)
         files.append("search_space.yaml")
 
         # Generate README
         readme = generate_readme(experiment_name, framework)
-        write_text(content=readme, filename="README.md", skill_name="hyperparameter_search")
+        write_text(content=readme, filename="README.md", skill_name="hyperparameter_search", output_dir=output_dir)
         files.append("README.md")
 
         return {

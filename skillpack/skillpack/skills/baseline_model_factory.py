@@ -86,19 +86,19 @@ def baseline_model_factory_main(
     try:
         # Generate training script
         train_code = generate_train_script(model_name, task_type, features, target)
-        write_text(content=train_code, filename="train.py", skill_name="baseline_model_factory")
+        write_text(content=train_code, filename="train.py", skill_name="baseline_model_factory", output_dir=output_dir)
 
         # Generate config
         config = generate_config(model_name, task_type, features, target)
-        write_text(content=config, filename="config.yaml", skill_name="baseline_model_factory")
+        write_text(content=config, filename="config.yaml", skill_name="baseline_model_factory", output_dir=output_dir)
 
         # Generate evaluation script
         eval_code = generate_eval_script(model_name, task_type)
-        write_text(content=eval_code, filename="evaluate.py", skill_name="baseline_model_factory")
+        write_text(content=eval_code, filename="evaluate.py", skill_name="baseline_model_factory", output_dir=output_dir)
 
         # Generate README
         readme = generate_readme(model_name, task_type)
-        write_text(content=readme, filename="README.md", skill_name="baseline_model_factory")
+        write_text(content=readme, filename="README.md", skill_name="baseline_model_factory", output_dir=output_dir)
 
         return {
             "success": True,

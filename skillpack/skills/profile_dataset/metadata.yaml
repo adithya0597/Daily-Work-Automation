@@ -1,29 +1,31 @@
 name: profile-dataset
 version: "1.0.0"
-description: Profile CSV datasets.
+description: Profile CSV datasets with statistics and type inference
+
 tags:
-  - automation
   - data
+  - profiling
 
 triggers:
-  - Generate profile-dataset output
-  - Create profile dataset
+  - Profile a CSV file
+  - Generate dataset statistics
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: profile-dataset
-  template: "skillpack profile-dataset --csv {...}"
+  template: "skillpack profile-dataset --csv data.csv"
 
 arguments:
   csv:
-    type: string
-    required: false
+    type: path
+    required: true
     cli_name: "--csv"
     description: "Path to the CSV file to profile"
 
 output:
   directory: "./out/profile_dataset/"
   files:
-    - output.md
+    - profile.md
+    - profile.json

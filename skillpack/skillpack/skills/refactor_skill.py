@@ -103,11 +103,11 @@ def refactor_skill_main(
 
         # Generate report
         report = generate_report(file_metrics, all_hotspots, all_suggestions, threshold)
-        write_text(content=report, filename="refactor_report.md", skill_name="refactor_skill")
+        write_text(content=report, filename="refactor_report.md", skill_name="refactor_skill", output_dir=output_dir)
 
         # Generate metrics JSON
         metrics_json = generate_metrics_json(file_metrics, all_hotspots)
-        write_text(content=metrics_json, filename="metrics.json", skill_name="refactor_skill")
+        write_text(content=metrics_json, filename="metrics.json", skill_name="refactor_skill", output_dir=output_dir)
 
         return {
             "success": True,

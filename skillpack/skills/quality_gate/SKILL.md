@@ -1,23 +1,31 @@
 # Quality Gate Skill
 
 ## When to Use
-- Run format + lint + type-check + tests.
-- Automate quality gate generation
+- Run format, lint, type-check, and tests
+- Validate code quality before commit/merge
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| check | string | No | Check only, don |
+| check | boolean | No | Check only, don't modify files |
 
 ## Outputs
-| File | Format | Description |
-|------|--------|-------------|
-| output.md | file | Generated output |
+This skill produces no file output. Results are written to stdout.
+
+## Procedure
+1. Run `ruff format` (with --check if check mode)
+2. Run `ruff check` (with --fix if not check mode)
+3. Run `mypy skillpack/`
+4. Run `pytest tests/ -v`
 
 ## Example
 ```bash
-skillpack quality-gate --name example
+# Fix and check
+skillpack quality-gate
+
+# Check only (no modifications)
+skillpack quality-gate --check
 ```
 
 ## Related Skills
-- Check skillpack --help for related skills
+- test-writer - Generate tests for source files
