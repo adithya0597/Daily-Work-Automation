@@ -1,13 +1,14 @@
 name: data-quality
 version: "1.0.0"
-description: Generate Pandera validation schemas.
+description: Generate Pandera validation schemas
+
 tags:
-  - automation
   - data
+  - validation
 
 triggers:
-  - Generate data-quality output
-  - Create data quality
+  - Generate data quality schema
+  - Create validation script
 
 dependencies:
   - profile-dataset
@@ -15,16 +16,17 @@ dependencies:
 command:
   binary: skillpack
   subcommand: data-quality
-  template: "skillpack data-quality --config {...}"
+  template: "skillpack data-quality --config schema_config.yaml"
 
 arguments:
   config:
-    type: string
+    type: path
     required: false
     cli_name: "--config"
-    description: "Path to config file (YAML or JSON). If not provided, generates an example."
+    description: "Path to config file (YAML/JSON). If not provided, generates example."
 
 output:
   directory: "./out/data_quality/"
   files:
-    - output.md
+    - schema.py
+    - run_validation.py

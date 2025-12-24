@@ -1,25 +1,26 @@
 # Schema Diff Skill
 
 ## When to Use
-- Compare schemas and generate migrations.
-- Automate schema diff generation
+- Compare two schema JSON files
+- Generate migration SQL with rollback
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| old | string | No | Path to old schema JSON file |
-| new | string | No | Path to new schema JSON file |
-| table | string | No | Table name for the migration (default: table_name) |
+| old | path | Yes | Path to old schema JSON file |
+| new | path | Yes | Path to new schema JSON file |
+| table | string | No | Table name for migration (default: table_name) |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.md | file | Generated output |
+| migration.sql | SQL | Forward and rollback migration statements |
+| migration.md | markdown | Migration notes and impact assessment |
 
 ## Example
 ```bash
-skillpack schema-diff --name example
+skillpack schema-diff --old v1_schema.json --new v2_schema.json --table users
 ```
 
 ## Related Skills
-- Check skillpack --help for related skills
+- data-quality - Validate data against schema

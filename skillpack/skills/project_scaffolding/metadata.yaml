@@ -1,34 +1,42 @@
 name: project-scaffolding
 version: "1.0.0"
-description: Generate new project skeletons.
+description: Generate a new project skeleton
+
 tags:
-  - automation
-  - data
+  - productivity
+  - scaffolding
 
 triggers:
-  - Generate project-scaffolding output
-  - Create project scaffolding
+  - Create new project
+  - Generate project template
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: project-scaffolding
-  template: "skillpack project-scaffolding --name {...} --description {...}"
+  template: "skillpack project-scaffolding --name my_project"
 
 arguments:
   name:
     type: string
-    required: false
+    required: true
     cli_name: "--name"
     description: "Name of the project to create"
   description:
     type: string
     required: false
     cli_name: "--description"
-    description: "Project description (default: "
+    description: "Project description (default: A new Python project)"
 
 output:
-  directory: "./out/project_scaffolding/"
+  directory: "./out/project_scaffolding/{name}/"
   files:
-    - output.md
+    - pyproject.toml
+    - README.md
+    - src/{name}/__init__.py
+    - src/{name}/main.py
+    - tests/__init__.py
+    - tests/test_main.py
+    - .github/workflows/ci.yml
+    - .gitignore

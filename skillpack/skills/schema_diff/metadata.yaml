@@ -1,30 +1,31 @@
 name: schema-diff
 version: "1.0.0"
-description: Compare schemas and generate migrations.
+description: Compare schemas and generate migrations
+
 tags:
-  - automation
-  - data
+  - database
+  - migration
 
 triggers:
-  - Generate schema-diff output
-  - Create schema diff
+  - Compare database schemas
+  - Generate migration SQL
 
 dependencies: []
 
 command:
   binary: skillpack
   subcommand: schema-diff
-  template: "skillpack schema-diff --old {...} --new {...} --table {...}"
+  template: "skillpack schema-diff --old old_schema.json --new new_schema.json"
 
 arguments:
   old:
-    type: string
-    required: false
+    type: path
+    required: true
     cli_name: "--old"
     description: "Path to old schema JSON file"
   new:
-    type: string
-    required: false
+    type: path
+    required: true
     cli_name: "--new"
     description: "Path to new schema JSON file"
   table:
@@ -36,4 +37,5 @@ arguments:
 output:
   directory: "./out/schema_diff/"
   files:
-    - output.md
+    - migration.sql
+    - migration.md

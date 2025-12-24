@@ -1,24 +1,28 @@
-# Pr Summary Skill
+# PR Summary Skill
 
 ## When to Use
-- Generate PR summaries with risk assessment from diffs.
-- Automate pr summary generation
+- Analyze PR diffs for changes and risk
+- Generate rollout/rollback plans
 
 ## Inputs
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| diff-file | string | No | Path to the diff file to analyze |
-| title | string | No | Title for the summary (default:  |
+| diff-file | path | Yes | Path to the diff file to analyze |
+| title | string | No | Title for the summary |
 
 ## Outputs
 | File | Format | Description |
 |------|--------|-------------|
-| output.md | file | Generated output |
+| PR_SUMMARY.md | markdown | Summary with risk assessment, rollout plan |
 
 ## Example
 ```bash
-skillpack pr-summary --name example
+# Generate diff first
+git diff main..feature-branch > changes.diff
+
+# Generate summary
+skillpack pr-summary --diff-file changes.diff --title "Feature X"
 ```
 
 ## Related Skills
-- Check skillpack --help for related skills
+- git-workflow - Generate commit messages and templates
