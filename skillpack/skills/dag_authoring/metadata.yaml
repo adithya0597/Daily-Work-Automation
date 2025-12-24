@@ -1,0 +1,26 @@
+name: dag-authoring
+version: "1.0.0"
+description: Generate DAG code for Airflow, Prefect, or Dagster
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: dag-authoring
+  template: "skillpack dag-authoring --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/dag_authoring/"
+  files:
+    - output.txt

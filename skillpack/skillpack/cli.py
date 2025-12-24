@@ -5,11 +5,15 @@ import sys
 
 from skillpack import __version__
 from skillpack.skills import (
+    backfill_planner,
+    dag_authoring,
+    daily_ops_summary,
     data_quality,
     dbt_generator,
     git_workflow,
     list_skills,
     notebook_to_package,
+    pipeline_doctor,
     pr_summary,
     profile_dataset,
     project_scaffolding,
@@ -66,6 +70,12 @@ def create_parser() -> argparse.ArgumentParser:
     notebook_to_package.register_parser(subparsers)
     test_writer.register_parser(subparsers)
     refactor_skill.register_parser(subparsers)
+
+    # ETL/Orchestration Layer
+    dag_authoring.register_parser(subparsers)
+    backfill_planner.register_parser(subparsers)
+    pipeline_doctor.register_parser(subparsers)
+    daily_ops_summary.register_parser(subparsers)
 
     return parser
 

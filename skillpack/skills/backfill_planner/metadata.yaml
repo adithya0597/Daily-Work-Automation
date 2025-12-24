@@ -1,0 +1,26 @@
+name: backfill-planner
+version: "1.0.0"
+description: Generate backfill plans with date ranges and checkpoints
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: backfill-planner
+  template: "skillpack backfill-planner --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/backfill_planner/"
+  files:
+    - output.txt

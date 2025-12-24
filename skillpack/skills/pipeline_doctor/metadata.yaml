@@ -1,0 +1,26 @@
+name: pipeline-doctor
+version: "1.0.0"
+description: Diagnose pipeline issues from logs and configs
+tags: []
+
+triggers:
+  - "TODO: add natural language triggers"
+
+dependencies: []
+
+command:
+  binary: skillpack
+  subcommand: pipeline-doctor
+  template: "skillpack pipeline-doctor --input {input_path}"
+
+arguments:
+  input_path:
+    type: file_path
+    required: true
+    cli_name: "--input"
+    description: Input file path
+
+output:
+  directory: "./out/pipeline_doctor/"
+  files:
+    - output.txt
