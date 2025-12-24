@@ -53,7 +53,7 @@ def daily_ops_summary_main(
 
         # Write output
         output_file = output_dir / "output.txt"
-        safe_write_file(output_file, f"Processed: {content}")
+        write_text(content=f"Processed: {content}", filename="output.txt", skill_name=output_dir.name)
 
         return {
             "success": True,

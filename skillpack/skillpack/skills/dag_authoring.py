@@ -1,20 +1,34 @@
-"""dag-authoring - Generate DAG code for Airflow, Prefect, or Dagster"""
+"""dag-authoring - Generate DAG code for Airflow, Prefect, or Dagster."""
 
 import argparse
+from datetime import datetime
 from pathlib import Path
+from textwrap import dedent
 from typing import Any
+
+import yaml
 
 from skillpack.utils.output import get_output_dir, write_text
 
 
 def handler(args: argparse.Namespace) -> int:
     """CLI handler for dag-authoring."""
+    # Load config if provided
+    config = {}
+    if args.config and args.config.exists():
+        with open(args.config) as f:
+            config = yaml.safe_load(f) or {}
+
     result = dag_authoring_main(
-        input_path=args.input,
+        dag_name=args.name,
+        framework=args.framework,
+        tasks=config.get("tasks", []),
+        schedule=args.schedule,
+        output_dir=args.output_dir,
     )
 
     if result.get("success"):
-        print(f"✅ Output written to {result['output_dir']}")
+        print(f"✅ Generated DAG: {result['dag_file']}")
         return 0
     print(f"❌ Error: {result.get('error')}")
     return 1
@@ -27,39 +41,273 @@ def register_parser(subparsers: Any) -> None:
         help="Generate DAG code for Airflow, Prefect, or Dagster",
     )
     parser.add_argument(
-        "--input",
-        type=Path,
+        "--name",
         required=True,
-        help="Input file path",
+        help="DAG/Flow name",
+    )
+    parser.add_argument(
+        "--framework",
+        choices=["airflow", "prefect", "dagster"],
+        default="airflow",
+        help="Target orchestration framework",
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        help="Path to pipeline configuration YAML",
+    )
+    parser.add_argument(
+        "--schedule",
+        default="@daily",
+        help="Schedule expression (e.g., @daily, 0 0 * * *)",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("./out/dag_authoring"),
+        help="Output directory",
     )
     parser.set_defaults(handler=handler)
 
 
 def dag_authoring_main(
-    input_path: Path,
+    dag_name: str,
+    framework: str = "airflow",
+    tasks: list[dict[str, Any]] | None = None,
+    schedule: str = "@daily",
     output_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Main implementation for dag-authoring."""
+    """Generate DAG/Flow code for the specified framework."""
     if output_dir is None:
         output_dir = get_output_dir("dag_authoring")
+    else:
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+    if tasks is None:
+        tasks = [{"name": "extract"}, {"name": "transform"}, {"name": "load"}]
 
     try:
-        # Validate input
-        if not input_path.exists():
-            return {"success": False, "error": f"File not found: {input_path}"}
+        if framework == "airflow":
+            dag_code = generate_airflow_dag(dag_name, tasks, schedule)
+            filename = f"{dag_name}_dag.py"
+        elif framework == "prefect":
+            dag_code = generate_prefect_flow(dag_name, tasks, schedule)
+            filename = f"{dag_name}_flow.py"
+        elif framework == "dagster":
+            dag_code = generate_dagster_job(dag_name, tasks, schedule)
+            filename = f"{dag_name}_job.py"
+        else:
+            return {"success": False, "error": f"Unknown framework: {framework}"}
 
-        # TODO: Implement skill logic
-        content = input_path.read_text()
+        dag_file = write_text(
+            content=dag_code,
+            filename=filename,
+            skill_name="dag_authoring",
+        )
 
-        # Write output
-        output_file = output_dir / "output.txt"
-        safe_write_file(output_file, f"Processed: {content}")
+        # Generate runbook snippet
+        runbook = generate_runbook(dag_name, framework, tasks, schedule)
+        write_text(
+            content=runbook,
+            filename=f"{dag_name}_runbook.md",
+            skill_name="dag_authoring",
+        )
 
         return {
             "success": True,
-            "output_dir": output_dir,
-            "files": [str(output_file)],
+            "dag_file": str(dag_file),
+            "framework": framework,
+            "output_dir": str(output_dir),
         }
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+def generate_airflow_dag(dag_name: str, tasks: list[dict], schedule: str) -> str:
+    """Generate Apache Airflow DAG code."""
+    task_names = [t.get("name", f"task_{i}") for i, t in enumerate(tasks)]
+
+    task_defs = []
+    for task in tasks:
+        name = task.get("name", "unnamed_task")
+        task_defs.append(f'''
+    @task
+    def {name}():
+        \"\"\"Task: {name}\"\"\"
+        # TODO: Implement {name} logic
+        print("{name} completed")
+        return "{name}_result"
+''')
+
+    dependencies = " >> ".join([f"{n}()" for n in task_names])
+
+    return dedent(f'''\
+        """DAG: {dag_name}
+        
+        Generated by skillpack dag-authoring on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        from datetime import datetime, timedelta
+        from airflow.decorators import dag, task
+        from airflow.models import Variable
+
+        default_args = {{
+            "owner": "data-team",
+            "depends_on_past": False,
+            "email_on_failure": True,
+            "email_on_retry": False,
+            "retries": 3,
+            "retry_delay": timedelta(minutes=5),
+        }}
+
+
+        @dag(
+            dag_id="{dag_name}",
+            schedule="{schedule}",
+            start_date=datetime(2024, 1, 1),
+            catchup=False,
+            default_args=default_args,
+            tags=["generated", "skillpack"],
+        )
+        def {dag_name}_dag():
+            \"\"\"
+            ETL DAG: {dag_name}
+            
+            Tasks: {", ".join(task_names)}
+            \"\"\"
+{"".join(task_defs)}
+            # Define task dependencies
+            {dependencies}
+
+
+        # Instantiate the DAG
+        {dag_name}_dag()
+    ''')
+
+
+def generate_prefect_flow(flow_name: str, tasks: list[dict], schedule: str) -> str:
+    """Generate Prefect flow code."""
+    task_defs = []
+    task_names = []
+    for task in tasks:
+        name = task.get("name", "unnamed_task")
+        task_names.append(name)
+        task_defs.append(f'''
+@task(retries=3, retry_delay_seconds=300)
+def {name}() -> str:
+    \"\"\"Task: {name}\"\"\"
+    # TODO: Implement {name} logic
+    return "{name}_result"
+''')
+
+    flow_body = "\n    ".join([f"result_{n} = {n}()" for n in task_names])
+
+    return dedent(f'''\
+        """Flow: {flow_name}
+        
+        Generated by skillpack dag-authoring on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        from prefect import flow, task
+        from prefect.deployments import Deployment
+
+{chr(10).join(task_defs)}
+
+        @flow(name="{flow_name}", retries=2)
+        def {flow_name}_flow():
+            \"\"\"
+            ETL Flow: {flow_name}
+            
+            Tasks: {", ".join(task_names)}
+            \"\"\"
+            {flow_body}
+            return "Flow completed successfully"
+
+
+        if __name__ == "__main__":
+            {flow_name}_flow()
+    ''')
+
+
+def generate_dagster_job(job_name: str, tasks: list[dict], schedule: str) -> str:
+    """Generate Dagster job code."""
+    op_defs = []
+    task_names = []
+    for task in tasks:
+        name = task.get("name", "unnamed_task")
+        task_names.append(name)
+        op_defs.append(f'''
+@op(retry_policy=RetryPolicy(max_retries=3, delay=300))
+def {name}(context):
+    \"\"\"Op: {name}\"\"\"
+    context.log.info("Running {name}")
+    # TODO: Implement {name} logic
+    return "{name}_result"
+''')
+
+    return dedent(f'''\
+        """Job: {job_name}
+        
+        Generated by skillpack dag-authoring on {datetime.now().strftime("%Y-%m-%d %H:%M")}
+        """
+
+        from dagster import job, op, schedule, RetryPolicy
+
+{chr(10).join(op_defs)}
+
+        @job(tags={{"generated": "skillpack"}})
+        def {job_name}_job():
+            \"\"\"
+            ETL Job: {job_name}
+            
+            Ops: {", ".join(task_names)}
+            \"\"\"
+            {" >> ".join(task_names) if len(task_names) > 1 else task_names[0] + "()" if task_names else "pass"}
+
+
+        @schedule(cron_schedule="{schedule.replace('@daily', '0 0 * * *')}", job={job_name}_job)
+        def {job_name}_schedule():
+            return {{}}
+    ''')
+
+
+def generate_runbook(
+    dag_name: str, framework: str, tasks: list[dict], schedule: str
+) -> str:
+    """Generate runbook documentation."""
+    task_names = [t.get("name", "unnamed") for t in tasks]
+
+    return dedent(f'''\
+        # {dag_name} Runbook
+
+        ## Overview
+        - **Framework**: {framework.title()}
+        - **Schedule**: {schedule}
+        - **Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+
+        ## Tasks
+        {chr(10).join([f"- {name}" for name in task_names])}
+
+        ## Deployment
+        ```bash
+        # For {framework}
+        {"airflow dags trigger " + dag_name if framework == "airflow" else ""}
+        {"prefect deployment run " + dag_name + "/" + dag_name + "_flow" if framework == "prefect" else ""}
+        {"dagster job launch -j " + dag_name + "_job" if framework == "dagster" else ""}
+        ```
+
+        ## Backfill Strategy
+        - Use date-based partitioning for historical runs
+        - Monitor memory usage during large backfills
+        - Set appropriate parallelism limits
+
+        ## Alerting
+        - Email on failure (configured in default_args)
+        - Slack integration recommended
+
+        ## Rollback
+        1. Pause the DAG/Flow
+        2. Review logs for failure cause
+        3. Fix and redeploy
+    ''')

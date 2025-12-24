@@ -125,7 +125,7 @@ def create_skill(name: str, description: str) -> None:
         from pathlib import Path
         from typing import Any
 
-        from skillpack.utils.output import get_output_dir, safe_write_file
+        from skillpack.utils.output import get_output_dir, write_text
 
 
         def handler(args: argparse.Namespace) -> int:
@@ -174,7 +174,7 @@ def create_skill(name: str, description: str) -> None:
 
                 # Write output
                 output_file = output_dir / "output.txt"
-                safe_write_file(output_file, f"Processed: {{content}}")
+                write_text(content=f"Processed: {{content}}", filename="output.txt", skill_name="{dir_name}")
 
                 return {{
                     "success": True,
